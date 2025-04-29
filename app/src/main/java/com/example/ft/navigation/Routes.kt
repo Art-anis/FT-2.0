@@ -1,7 +1,6 @@
 package com.example.ft.navigation
 
 import kotlinx.serialization.Serializable
-import java.util.Date
 
 //вершины навигационного графа
 
