@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">FT</string>
+    <string name="first_time_launch_key">first_launch</string>
+    <string name="airports_total_pref_key">airports_total</string>
+    <string name="airports_loaded_pref_key">airports_loaded</string>
+    <string name="cities_total_pref_key">cities_total</string>
+    <string name="cities_loaded_pref_key">cities_loaded</string>
+    <string name="loading_notification">For further functioning of the app, some data needs to be loaded. Please wait…</string>
+    <string name="loading_done">Loading complete!</string>
+    <string name="loaded_btn">Start</string>
+</resources>

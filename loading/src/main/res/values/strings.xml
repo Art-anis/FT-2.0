@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="airports_csv_name">RussianAirports.csv</string>
+    <string name="iata_column">iata</string>
+    <string name="name_column">name</string>
+    <string name="unknown_geoname_id">0</string>
+    <string name="russian_iso">RU</string>
+    <string name="airports_size_pref_key">airports_total</string>
+    <string name="airports_loaded_pref_key">airports_loaded</string>
+    <string name="cities_csv_name">Cities.csv</string>
+    <string name="timezone_column">timezone</string>
+    <string name="cities_total_pref_key">cities_total</string>
+    <string name="cities_loaded_pref_key">cities_loaded</string>
+</resources>
