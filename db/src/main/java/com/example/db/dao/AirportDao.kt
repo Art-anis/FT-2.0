@@ -23,5 +23,5 @@ interface AirportDao {
 
     //выбор аэропорта в поиске (отмечается обновлением даты)
     @Query("update airports set last_search = :date where iata_code = :iata")
-    suspend fun selectAirport(iata: String, date: Long)
+    suspend fun updateDate(iata: String, date: Long)
 }

@@ -3,6 +3,7 @@ package com.example.ft.navigation
 import android.net.Uri
 import android.os.Bundle
 import androidx.navigation.NavType
+import com.example.search_airports.util.AirportUIModel
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 

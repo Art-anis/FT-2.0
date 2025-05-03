@@ -1,6 +1,7 @@
 package com.example.ft.navigation
 
 import com.example.ft.util.DestinationType
+import com.example.search_airports.util.AirportUIModel
 import kotlinx.serialization.Serializable
 
 //вершины навигационного графа
@@ -12,6 +13,7 @@ data object Loading
 //маршрут для вложенного графа поиска
 @Serializable
 data object Search
+
 //поиск рейсов
 @Serializable
 data class FlightSearch(
@@ -30,6 +32,7 @@ data class AirportSearch(
 data class FlightList(
     val departure: String,
     val arrival: String,
+    val type: DestinationType,
     val date: Long
 )
 //просмотр конкретного рейса

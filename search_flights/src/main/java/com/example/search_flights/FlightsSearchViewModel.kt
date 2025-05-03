@@ -15,8 +15,7 @@ import java.util.Date
 
 //viewmodel для поиска рейсов
 class FlightsSearchViewModel(
-    private val airportSearchRepository: AirportSearchRepository,
-    private val flightsSearchRepository: FlightsSearchRepository
+    private val repository: FlightsSearchRepository
 ): ViewModel() {
 
     //состояние фрагмента поиска
@@ -24,45 +23,12 @@ class FlightsSearchViewModel(
     val searchModel: LiveData<FlightSearchUIModel>
         get() = _searchModel
 
-    //состояние поиска аэропортов
-    private var _airportSearchState: MutableLiveData<AirportSearchState> = MutableLiveData(AirportSearchState())
-    val airportSearchState: LiveData<AirportSearchState>
-        get() = _airportSearchState
-
-    //ссылка на загрузочную корутину
-    private var loadingJob: Job = Job()
-
     //при создании viewmodel инициализируем данные
     init {
         //при создании viewmodel инициализируем дату - через неделю
         val calendar = Calendar.getInstance()
         calendar.add(Calendar.DATE, 8)
         _searchModel.value = _searchModel.value?.copy(date = calendar.time)
-
-        refreshHistory()
-    }
-
-    //поиск аэропорта
-    fun searchAirport(query: String) {
-        //если до этого был запущен поиск, то отменяем его
-        if (_airportSearchState.value?.loading == true) {
-            loadingJob.cancel()
-            _airportSearchState.value?.loading = false
-        }
-        //запускаем новый поиск
-        loadingJob = viewModelScope.launch {
-            //ставим триггер загрузки
-            _airportSearchState.value?.loading = true
-            //ищем аэропорты в БД
-            val result = airportSearchRepository.searchAirports(query)
-            //обновляем UI-состояние
-            _airportSearchState.value = _airportSearchState.value?.copy(searchResult = result, loading = false)
-        }
-    }
-
-    //очищаем поиск
-    fun clearSearch() {
-        _airportSearchState.value = _airportSearchState.value?.copy(searchResult = listOf())
     }
 
     //выбор вылета
@@ -72,9 +38,7 @@ class FlightsSearchViewModel(
             return false
         }
         //устанаваливаем аэропорт в UI-модели
-        _searchModel.value = _searchModel.value?.copy(departure = airport)
-        //обновляем дату для истории поиска
-        selectAirport(airport.iataCode)
+        _searchModel.value?.departure = airport
         return true
     }
 
@@ -84,8 +48,9 @@ class FlightsSearchViewModel(
         if (_searchModel.value?.departure == airport) {
             return false
         }
-        _searchModel.value = _searchModel.value?.copy(arrival = airport)
-        selectAirport(airport.iataCode)
+        _searchModel.value?.let {
+            _searchModel.value!!.arrival = airport
+        }
         return true
     }
 
@@ -104,23 +69,5 @@ class FlightsSearchViewModel(
         _searchModel.value = _searchModel.value?.copy(arrival = AirportUIModel())
     }
 
-    //выбор аэропорта
-    private fun selectAirport(iata: String) {
-        //новая дата
-        val newDate = Calendar.getInstance().timeInMillis
-        viewModelScope.launch {
-            //обновление даты
-            airportSearchRepository.selectAirport(iata, newDate)
-            refreshHistory()
-        }
-    }
 
-    //обновление истории поиска
-    private fun refreshHistory() {
-        //подтягиваем историю
-        viewModelScope.launch {
-            val history = airportSearchRepository.getHistory()
-            _airportSearchState.value = _airportSearchState.value?.copy(searchHistory = history)
-        }
-    }
 }

@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    kotlin("plugin.serialization") version "2.0.21"
 }
 
 android {
@@ -39,6 +40,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.koin.android)
     implementation(libs.koin.core)
+    implementation(libs.kotlinx.serialization.json)
     implementation(project(":db"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

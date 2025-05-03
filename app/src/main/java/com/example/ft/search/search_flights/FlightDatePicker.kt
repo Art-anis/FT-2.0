@@ -17,9 +17,9 @@ import java.util.Date
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FlightDatePicker(
-    date: Date,
-    onDateSelected: (Date) -> Unit,
-    onDismiss: () -> Unit
+    date: Date, //дата
+    onDateSelected: (Date) -> Unit, //функция выбора даты
+    onDismiss: () -> Unit //функция закрытия диалога
 ) {
     //состояние для диалога
     val datePickerState = rememberDatePickerState(

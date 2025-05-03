@@ -7,7 +7,9 @@ import org.koin.dsl.module
 
 //модуль поиска рейсов
 val searchFlightsModule = module {
+    //репозиторий
     single { FlightsSearchRepository() }
 
-    viewModel<FlightsSearchViewModel> { FlightsSearchViewModel(airportSearchRepository = get(), flightsSearchRepository = get()) }
+    //viewmodel
+    viewModel<FlightsSearchViewModel> { FlightsSearchViewModel(repository = get()) }
 }

@@ -11,16 +11,20 @@ import com.example.search_airports.util.AirportUIModel
 //элемент списка аэропортов
 @Composable
 fun AirportItem(
-    airport: AirportUIModel,
-    onClick: () -> Unit
+    airport: AirportUIModel, //модель аэропорта
+    onSelected: () -> Unit //функция для выбора аэропорта
 ) {
+    //контейнер
     Column(modifier = Modifier
         .fillMaxWidth()
+        //кликабельный
         .clickable {
-            onClick()
+            onSelected()
         }
     ) {
+        //главная информация - название аэропорта и его iata код
         Text(text = "${airport.iataCode} - ${airport.airportName}")
+        //дополнительная информация - название города и страны
         Text(text = "${airport.cityName}, ${airport.countryName}")
     }
 }

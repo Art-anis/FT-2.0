@@ -30,23 +30,28 @@ fun LoadingAnimation(modifier: Modifier) {
     //состояние бесконечного перехода
     val infiniteTransition = rememberInfiniteTransition()
 
+    //анимация вращения индикатора
     val rotation by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 360f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1000)
+        initialValue = 0f, //начальное положение
+        targetValue = 360f, //конечное положение
+        animationSpec = infiniteRepeatable( //настройки анимации
+            animation = tween(1000) //продолжительность одного цикла
         ),
         label = ""
     )
 
-    var maxWidth by remember { mutableIntStateOf(0) }
+    //состояние максимальной ширины индикатора
+    var width by remember { mutableIntStateOf(0) }
+
+    //контейнер для индикатора
     Box(
         modifier = modifier
             .onSizeChanged {
-                maxWidth = it.width
+                width = it.width
             },
         contentAlignment = Alignment.Center
     ) {
+        //внутренний индикатор
         CircularProgressIndicator(
             strokeWidth = 1.dp,
             modifier = Modifier
@@ -55,28 +60,34 @@ fun LoadingAnimation(modifier: Modifier) {
                     rotationZ = rotation
                 }
         )
+        //средний индикатор
         CircularProgressIndicator(
             strokeWidth = 1.dp,
             modifier = Modifier
                 .fillMaxSize()
+                //увеличение на константу
                 .padding(
                     with(LocalDensity.current) {
-                        (maxWidth * PADDING_MIDDLE_CIRCLE).toDp()
+                        (width * PADDING_MIDDLE_CIRCLE).toDp()
                     }
                 )
+                //смещение на константу
                 .graphicsLayer {
                     rotationZ = rotation + POSITION_START_OFFSET_MIDDLE_CIRCLE
                 }
         )
+        //внешний индикатор
         CircularProgressIndicator(
             strokeWidth = 1.dp,
             modifier = Modifier
                 .fillMaxSize()
+                //увеличение на константу
                 .padding(
                     with(LocalDensity.current) {
-                        (maxWidth * PADDING_OUTER_CIRCLE).toDp()
+                        (width * PADDING_OUTER_CIRCLE).toDp()
                     }
                 )
+                //смещение на константу
                 .graphicsLayer {
                     rotationZ = rotation + POSITION_START_OFFSET_OUTER_CIRCLE
                 }

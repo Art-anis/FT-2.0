@@ -8,6 +8,7 @@ import retrofit2.http.Query
 //API аэропортов
 interface AirportsAPI {
 
+    //получить все аэропорты (для начальной загрузки)
     @GET("airportDatabase")
     suspend fun getAllAirports(
         @Query("key") apiKey: String = BuildConfig.API_KEY

@@ -33,6 +33,7 @@ import com.example.ft.search.search_airports.AirportSearchScreen
 import com.example.ft.search.search_flights.FlightSearchScreen
 import com.example.ft.tracked_flights.TrackedFlightsScreen
 import com.example.ft.ui.theme.FTTheme
+import com.example.ft.util.DestinationType
 import com.example.ft.util.sharedViewModel
 import com.example.ft.view_flight.ViewFlightScreen
 import com.example.search_flights.FlightsSearchViewModel
@@ -86,12 +87,15 @@ class MainActivity : ComponentActivity() {
                             //экран поиска рейсов
                             composable<FlightSearch> { entry ->
                                 //получение общей viewmodel
-                                val viewmodel = entry.sharedViewModel<FlightsSearchViewModel>(navController)
+                                val viewModel = entry.sharedViewModel<FlightsSearchViewModel>(navController)
                                 //сам экран
                                 FlightSearchScreen(
-                                    viewmodel = viewmodel,
+                                    viewModel = viewModel,
                                     onNavigateToAirportSearch = { type ->
                                         navController.navigate(AirportSearch(type))
+                                    },
+                                    onLaunchSearch = { departure, arrival, date, type ->
+
                                     }
                                 )
                             }
@@ -99,15 +103,20 @@ class MainActivity : ComponentActivity() {
                             //экран поиска аэропортов
                             composable<AirportSearch> { entry ->
                                 //получение общей viewmodel
-                                val viewmodel = entry.sharedViewModel<FlightsSearchViewModel>(navController)
+                                val viewModel = entry.sharedViewModel<FlightsSearchViewModel>(navController)
                                 val type = entry.toRoute<AirportSearch>().type
                                 //сам экран
                                 AirportSearchScreen(
-                                    viewModel = viewmodel,
                                     onNavigateBack = {
                                         navController.popBackStack()
                                     },
-                                    airportType = type
+                                    airportType = type,
+                                    setAirport = { airport ->
+                                        when(type) {
+                                            DestinationType.DEPARTURE -> viewModel.setDeparture(airport)
+                                            DestinationType.ARRIVAL -> viewModel.setArrival(airport)
+                                        }
+                                    }
                                 )
                             }
                         }

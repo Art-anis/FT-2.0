@@ -7,8 +7,8 @@ import com.example.search_airports.util.toUIModel
 
 //репозиторий для поиска аэропортов
 class AirportSearchRepository(
-    val airportDao: AirportDao,
-    val cityDao: CityDao
+    private val airportDao: AirportDao, //dao аэропортов
+    private val cityDao: CityDao //dao городов
 ) {
     //поиск аэропортов по тексту
     suspend fun searchAirports(query: String): List<AirportUIModel> {
@@ -37,7 +37,7 @@ class AirportSearchRepository(
     }
 
     //выбор аэропорта в поиске (обновляется дата)
-    suspend fun selectAirport(iata: String, date: Long) {
-        airportDao.selectAirport(iata, date)
+    suspend fun updateDate(iata: String, date: Long) {
+        airportDao.updateDate(iata, date)
     }
 }

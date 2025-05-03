@@ -7,6 +7,7 @@ import com.example.db.dao.CityDao
 import com.example.db.entities.AirportEntity
 import com.example.db.entities.CityEntity
 
+//класс БД
 @Database(entities = [AirportEntity::class, CityEntity::class], version = 1)
 abstract class AppDatabase: RoomDatabase() {
 

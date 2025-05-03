@@ -6,5 +6,5 @@ import androidx.compose.runtime.Composable
 //просмотр результата поиска рейсов
 @Composable
 fun FlightListScreen() {
-    Text("Watching list of searched flights")
+
 }

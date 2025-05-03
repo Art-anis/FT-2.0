@@ -6,7 +6,7 @@ import java.util.Date
 
 //UI-модель для поиска рейсов
 data class FlightSearchUIModel(
-    val departure: AirportUIModel = AirportUIModel(),
-    val arrival: AirportUIModel = AirportUIModel(),
-    val date: Date = Calendar.getInstance().time
+    var departure: AirportUIModel = AirportUIModel(), //аэропорт прилета
+    var arrival: AirportUIModel = AirportUIModel(), //аэропорт прибытия
+    var date: Date = Calendar.getInstance().time //дата
 )

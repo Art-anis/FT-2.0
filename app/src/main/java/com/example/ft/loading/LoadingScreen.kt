@@ -32,7 +32,7 @@ import org.koin.compose.koinInject
 //экран загрузки начальных данных
 @Composable
 fun LoadingScreen(
-    onNavigateToMain: () -> Unit
+    onNavigateToMain: () -> Unit //функция перехода на начальный экран - экран поиска
 ) {
 
     //состояние прогресса загрузки
@@ -45,6 +45,7 @@ fun LoadingScreen(
     //SharedPref
     val pref = PreferenceManager.getDefaultSharedPreferences(context)
 
+    //scope для корутин
     val scope = rememberCoroutineScope()
     LaunchedEffect(Unit) {
         //запускаем загрузку аэропортов
@@ -96,17 +97,18 @@ fun LoadingScreen(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 textAlign = TextAlign.Center
             )
-            Spacer(modifier = Modifier.height(16.dp))
             //индикатор загрузки
-            LoadingAnimation(modifier = Modifier.size(100.dp))
-            Spacer(modifier = Modifier.height(16.dp))
+            LoadingAnimation(modifier = Modifier.size(100.dp)
+                .padding(vertical = 16.dp))
             //текст прогресса
             Text(text = "%.2f".format(progress * 100) + "%",)
         }
         //загрузка готова, пользователь может идти дальше
         else {
-            Text(text = stringResource(R.string.loading_done))
-            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = stringResource(R.string.loading_done),
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
             Button(onClick = onNavigateToMain) {
                 Text(text = stringResource(R.string.loaded_btn))
             }
