@@ -1,4 +1,4 @@
-package com.example.ft.screens.loading
+package com.example.ft.loading
 
 import android.preference.PreferenceManager
 import androidx.compose.foundation.layout.Arrangement

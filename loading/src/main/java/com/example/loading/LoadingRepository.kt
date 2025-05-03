@@ -8,9 +8,9 @@ import com.example.db.entities.CityEntity
 import com.example.loading.util.toEntity
 import com.example.network.api.AirportsAPI
 import com.example.network.models.ResponseAirport
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.withContext
 
 //репозиторий для загрузки начальных данных
 class LoadingRepository(
@@ -22,10 +22,8 @@ class LoadingRepository(
     //загрузка аэропортов
     suspend fun loadAirports(context: Context) {
         //получаем все аэропорты
-        val airports = withContext(Dispatchers.IO) {
-            async {
-                airportsApi.getAllAirports()
-            }
+        val airports = CoroutineScope(Dispatchers.IO).async {
+            airportsApi.getAllAirports()
         }
 
         //название файла
@@ -44,7 +42,7 @@ class LoadingRepository(
             val nameColumn = context.getString(R.string.name_column) //столбец name в csv
             val unknownGeoname = context.getString(R.string.unknown_geoname_id) //нулевой geoname id
             val ruIso = context.getString(R.string.russian_iso) //"RU"
-            //ключи в SharedPred
+            //ключи в SharedPref
             val totalAirportsKey = context.getString(R.string.airports_size_pref_key) //общее кол=во аэропортов
             val loadedAirportsKey = context.getString(R.string.airports_loaded_pref_key) //кол-во уже загруженных в БД аэропортов
 
@@ -69,20 +67,18 @@ class LoadingRepository(
                 .apply()
 
             actualAirports.forEachIndexed { index, airport ->
-                withContext(Dispatchers.IO) {
-                    //российский аэропорт переименовываем перед тем, как добавить в БД
-                    if (airport.codeIso2Country == ruIso) {
-                        airportsDao.addAirport(remapAirportName(airport, russianAirports).toEntity())
-                    }
-                    //иначе просто добавляем
-                    else {
-                        airportsDao.addAirport(airport.toEntity())
-                    }
-
-                    //обновляем количество загруженных аэропортоа
-                    editor.putInt(loadedAirportsKey, index + 1)
-                        .apply()
+                //российский аэропорт переименовываем перед тем, как добавить в БД
+                if (airport.codeIso2Country == ruIso) {
+                    airportsDao.addAirport(remapAirportName(airport, russianAirports).toEntity())
                 }
+                //иначе просто добавляем
+                else {
+                    airportsDao.addAirport(airport.toEntity())
+                }
+
+                //обновляем количество загруженных аэропортоа
+                editor.putInt(loadedAirportsKey, index + 1)
+                    .apply()
             }
         }
     }
@@ -125,21 +121,18 @@ class LoadingRepository(
             //записываем в SharedPref размер списка городов
             editor.putInt(totalCitiesKey, actualCities.size)
                 .apply()
+            //перебираем все города
+            actualCities.forEachIndexed { index, city ->
+                //формируем из словаря сущность и добавляем ее в БД
+                citiesDao.addCity(CityEntity(
+                    name = city[nameColumn]!!,
+                    iata = city[iataColumn]!!,
+                    timeZone = city[timezoneColumn]!!
+                ))
 
-            withContext(Dispatchers.IO) {
-                //перебираем все города
-                actualCities.forEachIndexed { index, city ->
-                    //формируем из словаря сущность и добавляем ее в БД
-                    citiesDao.addCity(CityEntity(
-                        name = city[nameColumn]!!,
-                        iata = city[iataColumn]!!,
-                        timeZone = city[timezoneColumn]!!
-                    ))
-
-                    //обновляем количество загруженных городов
-                    editor.putInt(loadedCitiesKey, index + 1)
-                        .apply()
-                }
+                //обновляем количество загруженных городов
+                editor.putInt(loadedCitiesKey, index + 1)
+                    .apply()
             }
         }
     }

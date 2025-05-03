@@ -1,4 +1,4 @@
-package com.example.ft.screens.loading
+package com.example.ft.loading
 
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable

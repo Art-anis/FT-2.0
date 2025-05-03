@@ -1,4 +1,4 @@
-package com.example.ft.screens
+package com.example.ft.tracked_flights
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable

@@ -1,4 +1,4 @@
-package com.example.ft.screens
+package com.example.ft.airport_timetable
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable

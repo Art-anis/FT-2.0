@@ -4,6 +4,8 @@ import android.app.Application
 import com.example.db.di.dbModule
 import com.example.loading.di.loadingModule
 import com.example.network.di.networkModule
+import com.example.search_airports.di.searchAirportsModule
+import com.example.search_flights.di.searchFlightsModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -22,7 +24,9 @@ class App: Application() {
 
             androidLogger(Level.DEBUG)
 
-            modules(listOf(networkModule, dbModule, loadingModule))
+            modules(listOf(networkModule, dbModule, loadingModule, searchAirportsModule,
+                searchFlightsModule
+            ))
         }
     }
 }

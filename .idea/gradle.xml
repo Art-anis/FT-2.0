@@ -14,6 +14,8 @@
             <option value="$PROJECT_DIR$/db" />
             <option value="$PROJECT_DIR$/loading" />
             <option value="$PROJECT_DIR$/network" />
+            <option value="$PROJECT_DIR$/search_airports" />
+            <option value="$PROJECT_DIR$/search_flights" />
           </set>
         </option>
       </GradleProjectSettings>
