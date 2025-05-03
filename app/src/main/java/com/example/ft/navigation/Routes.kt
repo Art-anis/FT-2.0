@@ -1,7 +1,6 @@
 package com.example.ft.navigation
 
 import com.example.ft.util.DestinationType
-import com.example.search_airports.util.AirportUIModel
 import kotlinx.serialization.Serializable
 
 //вершины навигационного графа

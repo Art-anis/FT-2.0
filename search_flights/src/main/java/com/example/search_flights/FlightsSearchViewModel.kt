@@ -3,13 +3,8 @@ package com.example.search_flights
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.example.search_airports.AirportSearchRepository
-import com.example.search_airports.util.AirportSearchState
 import com.example.search_airports.util.AirportUIModel
 import com.example.search_flights.util.FlightSearchUIModel
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.Date
 
