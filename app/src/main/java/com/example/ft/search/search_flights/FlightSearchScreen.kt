@@ -20,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.ft.R
 import com.example.ft.util.DestinationType
+import com.example.search_airports.util.AirportUIModel
 import com.example.search_flights.FlightsSearchViewModel
 import java.util.Date
 
@@ -28,7 +29,7 @@ import java.util.Date
 fun FlightSearchScreen(
     viewModel: FlightsSearchViewModel, //общая с AirportSearchScreen viewmodel
     onNavigateToAirportSearch: (DestinationType) -> Unit, //функция перехода на экран поиска аэропортов
-    onLaunchSearch: (String, String, Date, DestinationType) -> Unit //функция запуска поиска рейсов
+    onLaunchSearch: (AirportUIModel, AirportUIModel, Date, DestinationType) -> Unit //функция запуска поиска рейсов
 ) {
     //состояние фрагмента поиска
     val searchData = viewModel.searchModel.observeAsState()
@@ -39,7 +40,6 @@ fun FlightSearchScreen(
         //меню для поиска
         Column(
             modifier = Modifier
-                .fillMaxHeight(0.4f)
                 .fillMaxWidth()
                 .background(color = Color.Blue)
                 .padding(top = 32.dp)
@@ -79,7 +79,8 @@ fun FlightSearchScreen(
                 Button(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 32.dp),
+                        .padding(horizontal = 32.dp)
+                        .padding(bottom = 16.dp),
                     //включена, только если были выбраны аэропорты вылета и прибытия
                     enabled = !searchData.value?.departure?.iataCode.isNullOrEmpty() &&
                             !searchData.value?.arrival?.iataCode.isNullOrEmpty(),
@@ -95,8 +96,8 @@ fun FlightSearchScreen(
 
                         //запускаем процедуру поиска рейсов
                         onLaunchSearch(
-                            model.departure.iataCode,
-                            model.arrival.iataCode,
+                            model.departure,
+                            model.arrival,
                             model.date,
                             type
                         )
@@ -108,9 +109,7 @@ fun FlightSearchScreen(
 
         }
         //отображение истории поиска
-        Column(
-            modifier = Modifier.fillMaxHeight(0.6f)
-        ) {
+        Column {
 
         }
     }

@@ -3,6 +3,7 @@ package com.example.ft.navigation
 import android.net.Uri
 import android.os.Bundle
 import androidx.navigation.NavType
+import com.example.search_airports.util.AirportUIModel
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -32,5 +33,32 @@ object CustomNavType {
         ) {
             bundle.putString(key, Json.encodeToString(value))
         }
+    }
+
+    //аэропорты
+    val AirportNavType = object: NavType<AirportUIModel>(isNullableAllowed = false) {
+        override fun get(
+            bundle: Bundle,
+            key: String
+        ): AirportUIModel? {
+            return Json.decodeFromString(bundle.getString(key) ?: return null)
+        }
+
+        override fun serializeAsValue(value: AirportUIModel): String {
+            return Uri.encode(Json.encodeToString(value))
+        }
+
+        override fun parseValue(value: String): AirportUIModel {
+            return Json.decodeFromString(Uri.decode(value))
+        }
+
+        override fun put(
+            bundle: Bundle,
+            key: String,
+            value: AirportUIModel
+        ) {
+            bundle.putString(key, Json.encodeToString(value))
+        }
+
     }
 }

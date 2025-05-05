@@ -77,7 +77,7 @@ fun LoadingScreen(
             val loadedCities = pref.getInt(context.getString(R.string.cities_loaded_pref_key), 0)
 
             //обновляем прогресс
-            progress = if (totalAirports != 0 || totalCities != 0) (loadedAirports + loadedCities).toFloat() / (totalAirports + totalCities) else 0f
+            progress = if (totalAirports != 0 && totalCities != 0) (loadedAirports + loadedCities).toFloat() / (totalAirports + totalCities) else 0f
         }
     }
 

@@ -1,6 +1,7 @@
 package com.example.network.di
 
 import com.example.network.api.AirportsAPI
+import com.example.network.api.FutureFlightsAPI
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -20,6 +21,10 @@ fun provideAirportsAPI(retrofit: Retrofit): AirportsAPI {
     return retrofit.create(AirportsAPI::class.java)
 }
 
+fun provideFlightsAPI(retrofit: Retrofit): FutureFlightsAPI {
+    return retrofit.create(FutureFlightsAPI::class.java)
+}
+
 //сетевой модуль
 val networkModule = module {
     //базовый URL
@@ -30,5 +35,6 @@ val networkModule = module {
 
     //API
     single { provideAirportsAPI(retrofit = get()) }
+    single { provideFlightsAPI(retrofit = get()) }
 
 }

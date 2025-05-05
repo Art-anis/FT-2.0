@@ -7,8 +7,16 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
@@ -24,7 +32,7 @@ import com.example.ft.navigation.AirportTimetable
 import com.example.ft.navigation.CustomNavType
 import com.example.ft.navigation.Flight
 import com.example.ft.navigation.FlightData
-import com.example.ft.navigation.FlightList
+import com.example.ft.navigation.FlightListSearchData
 import com.example.ft.navigation.FlightSearch
 import com.example.ft.navigation.Loading
 import com.example.ft.navigation.Search
@@ -36,10 +44,12 @@ import com.example.ft.ui.theme.FTTheme
 import com.example.ft.util.DestinationType
 import com.example.ft.util.sharedViewModel
 import com.example.ft.view_flight.ViewFlightScreen
+import com.example.search_airports.util.AirportUIModel
 import com.example.search_flights.FlightsSearchViewModel
 import kotlin.reflect.typeOf
 
 class MainActivity : ComponentActivity() {
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //проверяем, первый ли это запуск приложения, с помощью SharedPref
@@ -49,7 +59,20 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             FTTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+
+                //название topBar
+                var topAppBarTitle by rememberSaveable { mutableStateOf( baseContext.getString(R.string.top_bar_loading)) }
+
+                Scaffold(
+                    modifier = Modifier.fillMaxSize(),
+                    topBar = {
+                        TopAppBar(
+                            title = {
+                                Text(topAppBarTitle)
+                            }
+                        )
+                    }
+                ) { innerPadding ->
                     //создаем навигационный контроллер
                     val navController = rememberNavController()
                     //хост навигации
@@ -86,22 +109,35 @@ class MainActivity : ComponentActivity() {
                         ) {
                             //экран поиска рейсов
                             composable<FlightSearch> { entry ->
+                                //обновление заголовка
+                                topAppBarTitle = stringResource(R.string.top_bar_search_flights)
+
                                 //получение общей viewmodel
                                 val viewModel = entry.sharedViewModel<FlightsSearchViewModel>(navController)
                                 //сам экран
                                 FlightSearchScreen(
                                     viewModel = viewModel,
                                     onNavigateToAirportSearch = { type ->
+                                        //переходим на экран поиска аэропорта
                                         navController.navigate(AirportSearch(type))
                                     },
                                     onLaunchSearch = { departure, arrival, date, type ->
-
+                                        //переходи на экран просмотра списка рейсов
+                                        navController.navigate(FlightListSearchData(
+                                            departure = departure,
+                                            arrival = arrival,
+                                            type = type,
+                                            date = date.time
+                                        ))
                                     }
                                 )
                             }
 
                             //экран поиска аэропортов
                             composable<AirportSearch> { entry ->
+                                //обновление заголовка
+                                topAppBarTitle = stringResource(R.string.top_bar_search_airport)
+
                                 //получение общей viewmodel
                                 val viewModel = entry.sharedViewModel<FlightsSearchViewModel>(navController)
                                 val type = entry.toRoute<AirportSearch>().type
@@ -122,8 +158,21 @@ class MainActivity : ComponentActivity() {
                         }
 
                         //экран просмотра результатов поиска
-                        composable<FlightList> {
-                            FlightListScreen()
+                        composable<FlightListSearchData>(
+                            typeMap = mapOf(typeOf<AirportUIModel>() to CustomNavType.AirportNavType)
+                        ) { entry ->
+                            //данные для поиска
+                            val data = entry.toRoute<FlightListSearchData>()
+
+                            //обновление заголовка
+                            topAppBarTitle = "${data.departure.cityName} - ${data.arrival.cityName}"
+
+                            //сам экран
+                            FlightListScreen(
+                                searchData = data,
+                                departureCityName = data.departure.cityName,
+                                arrivalCityName = data.arrival.cityName,
+                            )
                         }
 
                         //экран просмотра данных о рейсе

@@ -20,7 +20,7 @@ class FlightsSearchViewModel(
 
     //при создании viewmodel инициализируем данные
     init {
-        //при создании viewmodel инициализируем дату - через неделю
+        //при создании viewmodel инициализируем дату - через неделю после текущей даты
         val calendar = Calendar.getInstance()
         calendar.add(Calendar.DATE, 8)
         _searchModel.value = _searchModel.value?.copy(date = calendar.time)
@@ -33,7 +33,9 @@ class FlightsSearchViewModel(
             return false
         }
         //устанаваливаем аэропорт в UI-модели
-        _searchModel.value?.departure = airport
+        searchModel.value?.let {
+            _searchModel.value!!.departure = airport
+        }
         return true
     }
 

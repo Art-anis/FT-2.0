@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.search"
+    namespace = "com.example.flight_list"
     compileSdk = 35
 
     defaultConfig {
@@ -39,9 +39,8 @@ dependencies {
     implementation(libs.material)
     implementation(libs.koin.android)
     implementation(libs.koin.core)
-    implementation(project(":db"))
     implementation(project(":network"))
-    implementation(project(":search_airports"))
+    implementation(project(":search_flights"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

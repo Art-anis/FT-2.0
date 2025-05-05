@@ -25,4 +25,8 @@
     <string name="date_format">MMM dd, yyyy</string>
     <string name="cancel">Cancel</string>
     <string name="ok">OK</string>
+    <string name="searching_flights">Searching your flights, please wait…</string>
+    <string name="top_bar_loading">Loading data…</string>
+    <string name="top_bar_search_flights">Search flights</string>
+    <string name="top_bar_search_airport">Search airport</string>
 </resources>
