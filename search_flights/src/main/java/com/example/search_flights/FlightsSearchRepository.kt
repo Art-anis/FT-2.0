@@ -8,19 +8,29 @@ class FlightsSearchRepository(
     private val api: FutureFlightsAPI //api рейсов
 ) {
 
+    //список ответов из api
+    private var _searchResult: List<ResponseFutureFlight> = listOf()
+    val searchResult: List<ResponseFutureFlight>
+        get() = _searchResult
+
     //поиск рейсов
-    suspend fun searchFlights(departure: String, arrival: String, type: String, date: String): List<ResponseFutureFlight> {
+    suspend fun searchFlights(departure: String, arrival: String, type: String, date: String) {
         //работаем по-разному в зависимости от типа даты
-        return if (type == "departure") {
+        if (type == "departure") {
             //если дата вылета, то сначала получаем все рейсы из аэропорта вылета в данную дату
             val allFlights = api.getFlights(airportIata = departure, destinationType = type, date = date)
             //затем фильтруем по аэропорту прибытия и сортируем по времени вылета
-            allFlights.filter { it -> it.arrival?.iataCode == arrival.lowercase()}.sortedBy { it.departure?.scheduledTime }
+            _searchResult = allFlights.filter { it -> it.arrival?.iataCode == arrival.lowercase()}.sortedBy { it.departure?.scheduledTime }
         }
         //иначе делаем наоборот
         else {
             val allFlights = api.getFlights(airportIata = arrival, destinationType = type, date = date)
-            allFlights.filter { it -> it.departure?.iataCode == departure.lowercase()}.sortedBy { it.departure?.scheduledTime }
+            _searchResult = allFlights.filter { it -> it.departure?.iataCode == departure.lowercase()}.sortedBy { it.departure?.scheduledTime }
         }
+    }
+
+    //выбор рейса из результатов поиска
+    fun findFlight(flightNumber: String): ResponseFutureFlight? {
+        return _searchResult.find { "${it.airline?.iataCode} ${it.flight?.number}".uppercase() == flightNumber }
     }
 }

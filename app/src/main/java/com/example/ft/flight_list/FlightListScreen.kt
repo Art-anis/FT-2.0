@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.example.flight_list.FlightListViewModel
 import com.example.ft.R
+import com.example.ft.navigation.FlightData
 import com.example.ft.navigation.FlightListSearchData
 import org.koin.androidx.compose.koinViewModel
 
@@ -23,7 +24,8 @@ import org.koin.androidx.compose.koinViewModel
 fun FlightListScreen(
     searchData: FlightListSearchData, //данные для поиска
     departureCityName: String, //название города вылета
-    arrivalCityName: String //название города прибытия
+    arrivalCityName: String, //название города прибытия
+    onNavigateToViewFlight: (FlightData) -> Unit //функция перехода на экран просмотра рейса
 ) {
 
     //viewmodel
@@ -68,7 +70,8 @@ fun FlightListScreen(
                 FlightCard(
                     flight = flightData,
                     departureCity = departureCityName,
-                    arrivalCity = arrivalCityName
+                    arrivalCity = arrivalCityName,
+                    onNavigateToViewFlight
                 )
             }
         }

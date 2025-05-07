@@ -11,5 +11,5 @@ val searchFlightsModule = module {
     single { FlightsSearchRepository(api = get()) }
 
     //viewmodel
-    viewModel<FlightsSearchViewModel> { FlightsSearchViewModel(repository = get()) }
+    viewModel<FlightsSearchViewModel> { FlightsSearchViewModel() }
 }

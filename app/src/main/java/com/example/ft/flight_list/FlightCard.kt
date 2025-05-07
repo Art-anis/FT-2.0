@@ -1,6 +1,7 @@
 package com.example.ft.flight_list
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -12,13 +13,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.flight_list.util.FlightItemUIModel
+import com.example.ft.navigation.FlightData
 
 //карточка с данными о рейсе
 @Composable
 fun FlightCard(
     flight: FlightItemUIModel, //рейс
     departureCity: String, //название города вылета
-    arrivalCity: String //название города прибытия
+    arrivalCity: String, //название города прибытия
+    onNavigateToViewFlight: (FlightData) -> Unit //функция перехода на экран просмотра рейса
 ) {
     //контейнер
     Card(
@@ -27,6 +30,16 @@ fun FlightCard(
                 horizontal = 32.dp,
                 vertical = 16.dp
             )
+            //при нажатии на карточку переходим на экран просмотра
+            .clickable {
+                onNavigateToViewFlight(
+                    FlightData(
+                        flightNumber = flight.flightNumber.uppercase(),
+                        departure = departureCity,
+                        arrival = arrivalCity
+                    )
+                )
+            }
     ){
     //текст с номером рейса
     if (flight.flightNumber.isNotEmpty()) {

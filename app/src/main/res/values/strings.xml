@@ -29,4 +29,7 @@
     <string name="top_bar_loading">Loading data…</string>
     <string name="top_bar_search_flights">Search flights</string>
     <string name="top_bar_search_airport">Search airport</string>
+    <string name="terminal_header">Terminal</string>
+    <string name="gate_header">Gate</string>
+    <string name="empty_field">--</string>
 </resources>

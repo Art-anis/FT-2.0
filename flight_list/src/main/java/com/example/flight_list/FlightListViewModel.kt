@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.flight_list.util.FlightItemUIModel
-import com.example.flight_list.util.toUIModel
+import com.example.flight_list.util.toItemUIModel
 import com.example.search_flights.FlightsSearchRepository
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -37,12 +37,13 @@ class FlightListViewModel(
             //обновляем состояние загрузки
             _loading.value = true
             //поиск
-            _flightList.value = flightSearchRepository.searchFlights(
+            flightSearchRepository.searchFlights(
                 departure = departure,
                 arrival = arrival,
                 type = type,
                 date = formattedDate
-            ).map { it.toUIModel() }
+            )
+            _flightList.value = flightSearchRepository.searchResult.map { it.toItemUIModel() }
             //обновляем состояние загрузки
             _loading.value = false
         }

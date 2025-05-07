@@ -64,6 +64,7 @@ dependencies {
     implementation(project(":search_airports"))
     implementation(project(":search_flights"))
     implementation(project(":flight_list"))
+    implementation(project(":view_flight"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

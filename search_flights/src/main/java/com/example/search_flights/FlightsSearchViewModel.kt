@@ -9,9 +9,7 @@ import java.util.Calendar
 import java.util.Date
 
 //viewmodel для поиска рейсов
-class FlightsSearchViewModel(
-    private val repository: FlightsSearchRepository
-): ViewModel() {
+class FlightsSearchViewModel(): ViewModel() {
 
     //состояние фрагмента поиска
     private var _searchModel: MutableLiveData<FlightSearchUIModel> = MutableLiveData(FlightSearchUIModel())

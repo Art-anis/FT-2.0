@@ -30,7 +30,6 @@ import com.example.ft.navigation.AirportFlightList
 import com.example.ft.navigation.AirportSearch
 import com.example.ft.navigation.AirportTimetable
 import com.example.ft.navigation.CustomNavType
-import com.example.ft.navigation.Flight
 import com.example.ft.navigation.FlightData
 import com.example.ft.navigation.FlightListSearchData
 import com.example.ft.navigation.FlightSearch
@@ -172,14 +171,22 @@ class MainActivity : ComponentActivity() {
                                 searchData = data,
                                 departureCityName = data.departure.cityName,
                                 arrivalCityName = data.arrival.cityName,
+                                onNavigateToViewFlight = { flightData ->
+                                    navController.navigate(flightData)
+                                }
                             )
                         }
 
                         //экран просмотра данных о рейсе
                         composable<FlightData>(
-                            typeMap = mapOf(typeOf<Flight>() to CustomNavType.FlightNavType)
-                        ) {
-                            ViewFlightScreen()
+                            typeMap = mapOf(typeOf<FlightData>() to CustomNavType.FlightNavType)
+                        ) { entry ->
+                            val flightData = entry.toRoute<FlightData>()
+
+                            topAppBarTitle = flightData.flightNumber
+                            ViewFlightScreen(
+                                flightData = flightData
+                            )
                         }
 
                         //экран просмотра

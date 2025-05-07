@@ -35,16 +35,13 @@ data class FlightListSearchData(
     val type: DestinationType,
     val date: Long
 )
-//просмотр конкретного рейса
-@Serializable
-data class FlightData(
-    val flight: Flight
-)
 
 @Serializable
 //класс рейса
-data class Flight(
-    val id: Int
+data class FlightData(
+    val flightNumber: String, //номер рейса
+    val departure: String, //название города вылета
+    val arrival: String //название города прибытия
 )
 
 //окно выбора аэропорта для просмотра его расписания
