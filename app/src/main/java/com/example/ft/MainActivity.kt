@@ -120,12 +120,11 @@ class MainActivity : ComponentActivity() {
                                         //переходим на экран поиска аэропорта
                                         navController.navigate(AirportSearch(type))
                                     },
-                                    onLaunchSearch = { departure, arrival, date, type ->
+                                    onLaunchSearch = { departure, arrival, date ->
                                         //переходи на экран просмотра списка рейсов
                                         navController.navigate(FlightListSearchData(
                                             departure = departure,
                                             arrival = arrival,
-                                            type = type,
                                             date = date.time
                                         ))
                                     }

@@ -2,6 +2,9 @@ package com.example.network.di
 
 import com.example.network.api.AirportsAPI
 import com.example.network.api.FutureFlightsAPI
+import com.example.network.models.ResponseFutureFlight
+import com.example.network.util.FlightDeserializer
+import com.google.gson.GsonBuilder
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -12,7 +15,11 @@ const val BASE_URL = "https://aviation-edge.com/v2/public/"
 fun provideRetrofit(baseUrl: String): Retrofit {
     return Retrofit.Builder()
         .baseUrl(baseUrl)
-        .addConverterFactory(GsonConverterFactory.create())
+        .addConverterFactory(
+            GsonConverterFactory.create(
+                GsonBuilder().registerTypeAdapter(Array<ResponseFutureFlight>::class.java, FlightDeserializer()).create()
+            )
+        )
         .build()
 }
 

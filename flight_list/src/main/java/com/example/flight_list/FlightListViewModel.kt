@@ -29,7 +29,7 @@ class FlightListViewModel(
 
 
     //процедура поиска рейсов
-    fun searchFlights(departure: String, arrival: String, type: String, date: Long) {
+    fun searchFlights(departure: String, arrival: String, date: Long) {
         viewModelScope.launch {
             //форматируем дату
             val formattedDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date(date))
@@ -40,7 +40,6 @@ class FlightListViewModel(
             flightSearchRepository.searchFlights(
                 departure = departure,
                 arrival = arrival,
-                type = type,
                 date = formattedDate
             )
             _flightList.value = flightSearchRepository.searchResult.map { it.toItemUIModel() }

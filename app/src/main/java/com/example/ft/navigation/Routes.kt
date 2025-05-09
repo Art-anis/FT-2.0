@@ -32,7 +32,6 @@ data class AirportSearch(
 data class FlightListSearchData(
     val departure: AirportUIModel,
     val arrival: AirportUIModel,
-    val type: DestinationType,
     val date: Long
 )
 
@@ -40,6 +39,7 @@ data class FlightListSearchData(
 //класс рейса
 data class FlightData(
     val flightNumber: String, //номер рейса
+    val date: Long,
     val departure: String, //название города вылета
     val arrival: String //название города прибытия
 )

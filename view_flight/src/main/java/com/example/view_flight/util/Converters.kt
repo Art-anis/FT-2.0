@@ -28,6 +28,7 @@ fun ResponseFutureFlight.toUIModel(
 
     //основная авиалиния
     val mainAirline = AirlineData(
+        airlineIata = this.airline?.iataCode ?: "",
         flightNumber = "${this.airline?.iataCode} ${this.flight?.number}".uppercase(),
         airlineName = this.airline?.name ?: ""
     )
@@ -36,6 +37,7 @@ fun ResponseFutureFlight.toUIModel(
     val codeshared = this.codeshared?.let { codeshared ->
             codeshared.flight?.number?.let {
                 AirlineData(
+                    airlineIata = codeshared.airline?.iataCode ?: "",
                     flightNumber = "${codeshared.airline?.iataCode} ${codeshared.flight?.number}".uppercase(),
                     airlineName = codeshared.airline?.name ?: ""
                 )

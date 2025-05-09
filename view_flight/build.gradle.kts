@@ -41,6 +41,7 @@ dependencies {
     implementation(libs.koin.core)
     implementation(project(":search_flights"))
     implementation(project(":network"))
+    implementation(project(":airport"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

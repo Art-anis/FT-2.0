@@ -39,6 +39,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.koin.android)
     implementation(libs.koin.core)
+    implementation(libs.com.squareup.retrofit)
     implementation(project(":db"))
     implementation(project(":network"))
     implementation(project(":search_airports"))

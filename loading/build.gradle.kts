@@ -39,6 +39,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.koin.core)
     implementation(libs.koin.android)
+    implementation(libs.com.squareup.retrofit)
     implementation(project(":network"))
     implementation(project(":db"))
     testImplementation(libs.junit)

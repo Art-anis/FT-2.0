@@ -56,29 +56,41 @@ class LoadingRepository(
                 .toList()
 
             //ожидаем данных из API
-            val actualAirports = airports.await()
-                //убираем российские аэропорты, которых нет в таблице
-                .filterNot { airport -> airport.geonameId == unknownGeoname
-                        && airport.codeIso2Country == ruIso}
+            val response = airports.await()
+            if (response.isSuccessful) {
+                val body = response.body()
+                body?.let {
+                    //убираем российские аэропорты, которых нет в таблице
+                    val actualAirports = body.filterNot { airport ->
+                        airport.geonameId == unknownGeoname
+                                && airport.codeIso2Country == ruIso
+                    }
 
 
-            //записываем в SharedPref размер списка
-            editor.putInt(totalAirportsKey, actualAirports.size)
-                .apply()
+                    //записываем в SharedPref размер списка
+                    editor.putInt(totalAirportsKey, actualAirports.size)
+                        .apply()
 
-            actualAirports.forEachIndexed { index, airport ->
-                //российский аэропорт переименовываем перед тем, как добавить в БД
-                if (airport.codeIso2Country == ruIso) {
-                    airportsDao.addAirport(remapAirportName(airport, russianAirports).toEntity())
+                    actualAirports.forEachIndexed { index, airport ->
+                        //российский аэропорт переименовываем перед тем, как добавить в БД
+                        if (airport.codeIso2Country == ruIso) {
+                            airportsDao.addAirport(
+                                remapAirportName(
+                                    airport,
+                                    russianAirports
+                                ).toEntity()
+                            )
+                        }
+                        //иначе просто добавляем
+                        else {
+                            airportsDao.addAirport(airport.toEntity())
+                        }
+
+                        //обновляем количество загруженных аэропортоа
+                        editor.putInt(loadedAirportsKey, index + 1)
+                            .apply()
+                    }
                 }
-                //иначе просто добавляем
-                else {
-                    airportsDao.addAirport(airport.toEntity())
-                }
-
-                //обновляем количество загруженных аэропортоа
-                editor.putInt(loadedAirportsKey, index + 1)
-                    .apply()
             }
         }
     }

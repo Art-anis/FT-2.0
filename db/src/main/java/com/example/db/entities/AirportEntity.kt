@@ -9,6 +9,7 @@ import androidx.room.PrimaryKey
 data class AirportEntity(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id") val id: Int = 0, //id
+    @ColumnInfo(name = "gmt") val gmt: String, //разница с Гринвичем
     @ColumnInfo(name = "airport_name") val name: String, //название
     @ColumnInfo(name = "icao_code") val icao: String, //код icao
     @ColumnInfo(name = "iata_code") val iata: String, //код iata

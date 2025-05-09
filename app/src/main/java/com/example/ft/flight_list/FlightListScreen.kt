@@ -37,15 +37,15 @@ fun FlightListScreen(
 
     //запускаем поиск
     LaunchedEffect(Unit) {
-        //преобразовываем данные в нужный формат
-        val type = searchData.type.value
-        //запускаем поиск
-        viewModel.searchFlights(
-            departure = searchData.departure.iataCode,
-            arrival = searchData.arrival.iataCode,
-            type = type,
-            date = searchData.date
-        )
+        //если до этого не искали или результат пустой
+        if (flightsList.value.isNullOrEmpty()) {
+            //запускаем поиск
+            viewModel.searchFlights(
+                departure = searchData.departure.iataCode,
+                arrival = searchData.arrival.iataCode,
+                date = searchData.date
+            )
+        }
     }
 
     //если загрузка еще идет
@@ -71,8 +71,22 @@ fun FlightListScreen(
                     flight = flightData,
                     departureCity = departureCityName,
                     arrivalCity = arrivalCityName,
+                    date = searchData.date,
                     onNavigateToViewFlight
                 )
+            }
+
+            //сообщение о том, что ничего не нашли
+            if (flightsList.value.isNullOrEmpty()) {
+                item {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(stringResource(R.string.flight_empty_search_result))
+                    }
+                }
             }
         }
     }

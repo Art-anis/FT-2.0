@@ -14,18 +14,30 @@ class FlightsSearchRepository(
         get() = _searchResult
 
     //поиск рейсов
-    suspend fun searchFlights(departure: String, arrival: String, type: String, date: String) {
-        //работаем по-разному в зависимости от типа даты
-        if (type == "departure") {
-            //если дата вылета, то сначала получаем все рейсы из аэропорта вылета в данную дату
-            val allFlights = api.getFlights(airportIata = departure, destinationType = type, date = date)
-            //затем фильтруем по аэропорту прибытия и сортируем по времени вылета
-            _searchResult = allFlights.filter { it -> it.arrival?.iataCode == arrival.lowercase()}.sortedBy { it.departure?.scheduledTime }
-        }
-        //иначе делаем наоборот
-        else {
-            val allFlights = api.getFlights(airportIata = arrival, destinationType = type, date = date)
-            _searchResult = allFlights.filter { it -> it.departure?.iataCode == departure.lowercase()}.sortedBy { it.departure?.scheduledTime }
+    suspend fun searchFlights(departure: String, arrival: String, date: String) {
+        //сначала получаем все рейсы из аэропорта вылета в данную дату
+        val allFlights = api.getFlights(airportIata = departure, destinationType = "departure", date = date)
+        if (allFlights.isSuccessful) {
+            val body = allFlights.body()
+            body?.let { result ->
+                //затем фильтруем по аэропорту прибытия и сортируем по времени вылета
+                val filteredFlights = result
+                    .filter { it.arrival?.iataCode == arrival.lowercase() }
+                    .sortedBy { it.departure?.scheduledTime }
+
+                //группируем рейсы по вылету и прибытию, чтобы потом исключить дубликаты
+                val groupedFlights = filteredFlights.groupBy { flight -> Pair(flight.departure, flight.arrival) }
+                _searchResult = groupedFlights.map { entry ->
+                    //если единственный в группе, то возвращаем его
+                    if (entry.value.size == 1) {
+                        entry.value[0]
+                    }
+                    //иначе выбираем единственного с кодшерингом, потому что остальные - это те же рейсы для других авиалиний
+                    else {
+                        entry.value.filter { it.codeshared != null }[0]
+                    }
+                }
+            }
         }
     }
 

@@ -21,6 +21,10 @@ interface AirportDao {
     @Query("select * from airports where last_search != 0 order by last_search desc limit 3")
     suspend fun getHistory(): List<AirportEntity>
 
+    //получение аэропорта по iata
+    @Query("select * from airports where iata_code = :iata")
+    suspend fun getAirportByIata(iata: String): AirportEntity?
+
     //выбор аэропорта в поиске (отмечается обновлением даты)
     @Query("update airports set last_search = :date where iata_code = :iata")
     suspend fun updateDate(iata: String, date: Long)

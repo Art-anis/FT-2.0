@@ -21,6 +21,7 @@ fun FlightCard(
     flight: FlightItemUIModel, //рейс
     departureCity: String, //название города вылета
     arrivalCity: String, //название города прибытия
+    date: Long, //дата вылета
     onNavigateToViewFlight: (FlightData) -> Unit //функция перехода на экран просмотра рейса
 ) {
     //контейнер
@@ -36,7 +37,8 @@ fun FlightCard(
                     FlightData(
                         flightNumber = flight.flightNumber.uppercase(),
                         departure = departureCity,
-                        arrival = arrivalCity
+                        arrival = arrivalCity,
+                        date = date
                     )
                 )
             }

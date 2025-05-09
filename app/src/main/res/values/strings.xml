@@ -32,4 +32,10 @@
     <string name="terminal_header">Terminal</string>
     <string name="gate_header">Gate</string>
     <string name="empty_field">--</string>
+    <string name="loading_flight">Loading flight data, please wait…</string>
+    <string name="airline_and_codeshared_header">Airline and codeshared</string>
+    <string name="main_airline">Main airline</string>
+    <string name="codeshared">Codeshared</string>
+    <string name="track_flight">Track flight</string>
+    <string name="flight_empty_search_result">Sorry, but we found nothing!</string>
 </resources>
