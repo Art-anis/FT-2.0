@@ -3,8 +3,10 @@ package com.example.db.di
 import android.content.Context
 import androidx.room.Room
 import com.example.db.AppDatabase
+import com.example.db.dao.AirlineDao
 import com.example.db.dao.AirportDao
 import com.example.db.dao.CityDao
+import com.example.db.dao.TrackedFlightDao
 import org.koin.dsl.module
 
 //создание инстанса БД
@@ -25,6 +27,14 @@ fun provideCityDao(db: AppDatabase): CityDao {
     return db.cityDao()
 }
 
+fun provideTrackedFlightDao(db: AppDatabase): TrackedFlightDao {
+    return db.trackedFlightsDao()
+}
+
+fun provideAirlineDao(db: AppDatabase): AirlineDao {
+    return db.airlineDao()
+}
+
 val dbModule = module {
     //БД
     single { provideDb(context = get()) }
@@ -32,4 +42,6 @@ val dbModule = module {
     //dao
     single { provideAirportDao(db = get()) }
     single { provideCityDao(db = get()) }
+    single { provideTrackedFlightDao(db = get()) }
+    single { provideAirlineDao(db = get()) }
 }

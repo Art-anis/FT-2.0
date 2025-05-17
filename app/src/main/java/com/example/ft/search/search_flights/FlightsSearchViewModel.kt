@@ -1,4 +1,4 @@
-package com.example.search_flights
+package com.example.ft.search.search_flights
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -9,7 +9,7 @@ import java.util.Calendar
 import java.util.Date
 
 //viewmodel для поиска рейсов
-class FlightsSearchViewModel(): ViewModel() {
+class FlightsSearchViewModel: ViewModel() {
 
     //состояние фрагмента поиска
     private var _searchModel: MutableLiveData<FlightSearchUIModel> = MutableLiveData(FlightSearchUIModel())

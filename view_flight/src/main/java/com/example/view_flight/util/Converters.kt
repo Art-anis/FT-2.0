@@ -50,7 +50,6 @@ fun ResponseFutureFlight.toUIModel(
         departure = departure,
         arrival = arrival,
         airline = mainAirline,
-        codeshared = codeshared,
-        aircraft = this.aircraft?.modelText ?: ""
+        codeshared = codeshared
     )
 }

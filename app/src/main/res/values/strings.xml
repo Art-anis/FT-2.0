@@ -38,4 +38,11 @@
     <string name="codeshared">Codeshared</string>
     <string name="track_flight">Track flight</string>
     <string name="flight_empty_search_result">Sorry, but we found nothing!</string>
+    <string name="fetching_tracked_flights">Fetching your tracked flights…</string>
+    <string name="search_flights_drawer_id">search_flights</string>
+    <string name="search_flights_drawer_value">Search Flights</string>
+    <string name="tracked_flights_drawer_id">tracked flights</string>
+    <string name="view_tracked_flights_drawer_value">View tracked flights</string>
+    <string name="already_tracked">Already tracked</string>
+    <string name="tracked_flights_title">Tracked flights</string>
 </resources>

@@ -6,5 +6,11 @@ import org.koin.dsl.module
 //модуль загрузки данных
 val loadingModule = module {
     //репозиторий
-    single { LoadingRepository(airportsApi = get(), airportsDao = get(), citiesDao = get()) }
+    single { LoadingRepository(
+        airportsApi = get(),
+        airportsDao = get(),
+        citiesDao = get(),
+        airlineDao = get(),
+        airlinesAPI = get()
+    ) }
 }

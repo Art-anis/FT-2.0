@@ -2,10 +2,12 @@ package com.example.loading
 
 import android.content.Context
 import android.preference.PreferenceManager
+import com.example.db.dao.AirlineDao
 import com.example.db.dao.AirportDao
 import com.example.db.dao.CityDao
 import com.example.db.entities.CityEntity
 import com.example.loading.util.toEntity
+import com.example.network.api.AirlinesAPI
 import com.example.network.api.AirportsAPI
 import com.example.network.models.ResponseAirport
 import kotlinx.coroutines.CoroutineScope
@@ -16,7 +18,9 @@ import kotlinx.coroutines.async
 class LoadingRepository(
     private val airportsApi: AirportsAPI, //api аэропортов
     private val airportsDao: AirportDao, //dao аэропортов
-    private val citiesDao: CityDao //dao городов
+    private val citiesDao: CityDao, //dao городов
+    private val airlinesAPI: AirlinesAPI, //api авиалиний
+    private val airlineDao: AirlineDao //dao авиалиний
 ) {
 
     //загрузка аэропортов
@@ -146,6 +150,17 @@ class LoadingRepository(
                 editor.putInt(loadedCitiesKey, index + 1)
                     .apply()
             }
+        }
+    }
+
+    //загрузка авиалиний
+    suspend fun loadAirlines() {
+        val result = airlinesAPI.getAllAirlines()
+
+        result.asSequence().filter {
+            it.sizeAirline != 0 && it.statusAirline == "active" && !it.codeIataAirline.isNullOrEmpty()
+        }.forEach {
+            airlineDao.addAirline(it.toEntity())
         }
     }
 }

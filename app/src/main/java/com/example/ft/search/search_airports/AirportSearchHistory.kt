@@ -20,7 +20,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.ft.R
 import com.example.ft.util.DestinationType
-import com.example.search_airports.AirportsSearchViewModel
 import com.example.search_airports.util.AirportUIModel
 
 //история поиска аэропортов

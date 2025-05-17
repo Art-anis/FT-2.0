@@ -18,6 +18,7 @@
             <option value="$PROJECT_DIR$/network" />
             <option value="$PROJECT_DIR$/search_airports" />
             <option value="$PROJECT_DIR$/search_flights" />
+            <option value="$PROJECT_DIR$/tracked_flights" />
             <option value="$PROJECT_DIR$/view_flight" />
           </set>
         </option>

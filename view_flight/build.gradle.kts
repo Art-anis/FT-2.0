@@ -42,6 +42,7 @@ dependencies {
     implementation(project(":search_flights"))
     implementation(project(":network"))
     implementation(project(":airport"))
+    implementation(project(":tracked_flights"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

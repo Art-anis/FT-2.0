@@ -13,7 +13,6 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.ft.util.DestinationType
-import com.example.search_airports.AirportsSearchViewModel
 import com.example.search_airports.util.AirportUIModel
 import org.koin.androidx.compose.koinViewModel
 

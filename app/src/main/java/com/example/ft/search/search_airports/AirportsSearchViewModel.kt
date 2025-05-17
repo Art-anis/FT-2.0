@@ -1,9 +1,10 @@
-package com.example.search_airports
+package com.example.ft.search.search_airports
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.search_airports.AirportSearchRepository
 import com.example.search_airports.util.AirportSearchState
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch

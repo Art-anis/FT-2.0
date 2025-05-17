@@ -1,4 +1,4 @@
-package com.example.flight_list
+package com.example.ft.flight_list
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

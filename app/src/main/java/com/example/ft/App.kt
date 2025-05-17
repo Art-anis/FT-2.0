@@ -4,10 +4,12 @@ import android.app.Application
 import com.example.airport.di.airportModule
 import com.example.db.di.dbModule
 import com.example.flight_list.di.flightListModule
+import com.example.ft.di.appModule
 import com.example.loading.di.loadingModule
 import com.example.network.di.networkModule
 import com.example.search_airports.di.searchAirportsModule
 import com.example.search_flights.di.searchFlightsModule
+import com.example.tracked_flights.di.trackedFlightsModule
 import com.example.view_flight.di.viewFlightModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -28,7 +30,8 @@ class App: Application() {
             androidLogger(Level.DEBUG)
 
             modules(listOf(networkModule, dbModule, loadingModule, searchAirportsModule,
-                searchFlightsModule, flightListModule, viewFlightModule, airportModule))
+                searchFlightsModule, flightListModule, viewFlightModule, airportModule,
+                trackedFlightsModule, appModule))
         }
     }
 }

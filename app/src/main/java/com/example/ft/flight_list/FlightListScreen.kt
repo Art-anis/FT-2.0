@@ -13,7 +13,6 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import com.example.flight_list.FlightListViewModel
 import com.example.ft.R
 import com.example.ft.navigation.FlightData
 import com.example.ft.navigation.FlightListSearchData

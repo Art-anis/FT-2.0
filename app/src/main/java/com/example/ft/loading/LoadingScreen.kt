@@ -56,6 +56,11 @@ fun LoadingScreen(
             repository.loadCities(context)
         }
 
+        //запускаем загрузку авиалиний
+        scope.launch {
+            repository.loadAirlines()
+        }
+
         //общие количества аэропортов и городов
         var totalAirports = 0
         var totalCities = 0

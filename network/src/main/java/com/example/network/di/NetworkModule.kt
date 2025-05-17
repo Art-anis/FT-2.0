@@ -1,5 +1,6 @@
 package com.example.network.di
 
+import com.example.network.api.AirlinesAPI
 import com.example.network.api.AirportsAPI
 import com.example.network.api.FutureFlightsAPI
 import com.example.network.models.ResponseFutureFlight
@@ -32,6 +33,10 @@ fun provideFlightsAPI(retrofit: Retrofit): FutureFlightsAPI {
     return retrofit.create(FutureFlightsAPI::class.java)
 }
 
+fun provideAirlinesAPI(retrofit: Retrofit): AirlinesAPI {
+    return retrofit.create(AirlinesAPI::class.java)
+}
+
 //сетевой модуль
 val networkModule = module {
     //базовый URL
@@ -43,5 +48,6 @@ val networkModule = module {
     //API
     single { provideAirportsAPI(retrofit = get()) }
     single { provideFlightsAPI(retrofit = get()) }
+    single { provideAirlinesAPI(retrofit = get()) }
 
 }
