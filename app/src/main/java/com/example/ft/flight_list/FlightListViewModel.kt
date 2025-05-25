@@ -32,7 +32,7 @@ class FlightListViewModel(
     fun searchFlights(departure: String, arrival: String, date: Long) {
         viewModelScope.launch {
             //форматируем дату
-            val formattedDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date(date))
+            val formattedDate = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).format(Date(date))
 
             //обновляем состояние загрузки
             _loading.value = true

@@ -5,5 +5,6 @@ data class TrackedFlightUIModel(
     val departure: DestinationData,
     val arrival: DestinationData,
     val airline: AirlineData,
-    val codeshared: AirlineData?
+    val codeshared: AirlineData?,
+    val status: String
 )

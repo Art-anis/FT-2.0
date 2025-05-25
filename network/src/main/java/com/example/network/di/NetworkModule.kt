@@ -2,9 +2,12 @@ package com.example.network.di
 
 import com.example.network.api.AirlinesAPI
 import com.example.network.api.AirportsAPI
+import com.example.network.api.FlightScheduleAPI
 import com.example.network.api.FutureFlightsAPI
+import com.example.network.models.ResponseFlightSchedule
 import com.example.network.models.ResponseFutureFlight
 import com.example.network.util.FlightDeserializer
+import com.example.network.util.FlightScheduleDeserializer
 import com.google.gson.GsonBuilder
 import org.koin.dsl.module
 import retrofit2.Retrofit
@@ -18,7 +21,10 @@ fun provideRetrofit(baseUrl: String): Retrofit {
         .baseUrl(baseUrl)
         .addConverterFactory(
             GsonConverterFactory.create(
-                GsonBuilder().registerTypeAdapter(Array<ResponseFutureFlight>::class.java, FlightDeserializer()).create()
+                GsonBuilder()
+                    .registerTypeAdapter(Array<ResponseFutureFlight>::class.java, FlightDeserializer())
+                    .registerTypeAdapter(Array<ResponseFlightSchedule>::class.java, FlightScheduleDeserializer())
+                    .create()
             )
         )
         .build()
@@ -37,6 +43,10 @@ fun provideAirlinesAPI(retrofit: Retrofit): AirlinesAPI {
     return retrofit.create(AirlinesAPI::class.java)
 }
 
+fun provideFlightScheduleAPI(retrofit: Retrofit): FlightScheduleAPI {
+    return retrofit.create(FlightScheduleAPI::class.java)
+}
+
 //сетевой модуль
 val networkModule = module {
     //базовый URL
@@ -49,5 +59,6 @@ val networkModule = module {
     single { provideAirportsAPI(retrofit = get()) }
     single { provideFlightsAPI(retrofit = get()) }
     single { provideAirlinesAPI(retrofit = get()) }
+    single { provideFlightScheduleAPI(retrofit = get()) }
 
 }

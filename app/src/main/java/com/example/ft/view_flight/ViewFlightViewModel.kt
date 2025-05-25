@@ -41,6 +41,7 @@ class ViewFlightViewModel(
         }
     }
 
+    //получение отслеживаемого рейса
     fun getTrackedFlight(iata: String, date: Long) {
         viewModelScope.launch {
             val result = trackedFlightsRepository.getTrackedFlight(iata, date)
@@ -50,12 +51,16 @@ class ViewFlightViewModel(
         }
     }
 
-    fun trackFlight(flight: ViewFlightUIModel, date: Long) {
+    //отслеживаем рейс
+    suspend fun trackFlight(flight: ViewFlightUIModel, date: Long): Int {
+        //разбиваем часы и минуты
         val (arrivalHours, arrivalMinutes) = flight.arrival.time.split(":").map { it.toInt() }
+        //устанавливаем их в календарь
         val arrivalCalendar = Calendar.getInstance()
         arrivalCalendar.set(Calendar.HOUR_OF_DAY, arrivalHours)
         arrivalCalendar.set(Calendar.MINUTE, arrivalMinutes)
 
+        //собираем данные о вылете
         val departure = DestinationData(
             airportIata = flight.departure.iata,
             cityName = flight.departure.cityName,
@@ -63,6 +68,8 @@ class ViewFlightViewModel(
             gate = flight.departure.gate,
             time = date
         )
+
+        //собираем данные о прибытии
         val arrival = DestinationData(
             airportIata = flight.arrival.iata,
             cityName = flight.arrival.cityName,
@@ -70,11 +77,15 @@ class ViewFlightViewModel(
             gate = flight.arrival.gate,
             time = arrivalCalendar.timeInMillis
         )
+
+        //собираем данные об авиалинии
         val airline = AirlineData(
             airlineIata = flight.airline.airlineIata,
             flightNumber = flight.airline.flightNumber,
             airlineName = flight.airline.airlineName
         )
+
+        //собираем данные о кодшеринге, если он есть
         val codeshared = flight.codeshared?.let {
             AirlineData(
                 airlineIata = it.airlineIata,
@@ -83,17 +94,18 @@ class ViewFlightViewModel(
             )
         }
 
-
-        viewModelScope.launch {
+        //запуск отслеживания рейса
+        return viewModelScope.async {
             trackedFlightsRepository.trackFlight(
                 departure = departure,
                 arrival = arrival,
                 mainAirline = airline,
                 codeshared = codeshared
             )
-        }
+        }.await()
     }
 
+    //проверка, отслеживаемый ли рейс
     suspend fun checkIfTracked(flightIata: String, date: Long): Boolean {
         val result = viewModelScope.async {
             trackedFlightsRepository.getTrackedFlight(flightIata, date) != null

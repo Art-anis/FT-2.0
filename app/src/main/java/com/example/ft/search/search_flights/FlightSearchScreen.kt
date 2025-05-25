@@ -83,7 +83,7 @@ fun FlightSearchScreen(
         }
         //отображение истории поиска
         Column {
-
+            
         }
     }
 }

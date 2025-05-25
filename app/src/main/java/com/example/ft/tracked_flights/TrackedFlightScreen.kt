@@ -46,17 +46,20 @@ fun TrackedFlightsScreen(
     onNavigateToViewFlight: (FlightData) -> Unit
 ) {
 
+    //viewmodel
     val viewModel = koinViewModel<TrackedFlightsViewModel>()
 
+    //список рейсов
     val flightList by viewModel.trackedFlightList.observeAsState()
+    //флаг загрузки
     val loading by viewModel.loading.observeAsState()
 
+    //при открытии получаем список рейсов
     LaunchedEffect(Unit) {
-        if (flightList.isNullOrEmpty()) {
-            viewModel.getFlightList()
-        }
+        viewModel.getFlightList()
     }
 
+    //если еще грузим, то показываем колесо
     if (loading == true || loading == null) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -67,18 +70,24 @@ fun TrackedFlightsScreen(
             Text(stringResource(R.string.fetching_tracked_flights))
         }
     }
+    //иначе отображаем список
     else {
         LazyColumn(
             modifier = Modifier.fillMaxSize()
         ) {
             items(flightList ?: emptyList(), key = { item -> "${item.flightNumber} - ${item.departure.time}"}) { flight ->
+                //контейнер
                 SwipeToDeleteContainer(
                     item = flight.toFlightItemUIModel(),
-                    onDelete = { },
+                    //при свайпе удаляем запись
+                    onDelete = {
+                        viewModel.onDelete(flight.flightNumber, flight.departure.time)
+                    },
                     departureCity = flight.departure.cityName,
                     arrivalCity = flight.arrival.cityName,
                     date = flight.departure.time,
                     onNavigateToViewFlight = onNavigateToViewFlight,
+                    //содержимое
                     content = { item, depCity, arrCity, date, nav ->
                         FlightCard(
                             flight = item,
@@ -95,6 +104,7 @@ fun TrackedFlightsScreen(
     }
 }
 
+//контейнер для отслеживаемого рейса
 @Composable
 fun <T, R> SwipeToDeleteContainer(
     item: T,
@@ -107,6 +117,7 @@ fun <T, R> SwipeToDeleteContainer(
     content: @Composable (T, String, String, Long, (R) -> Unit) -> Unit
 ) {
     var isRemoved by remember { mutableStateOf(false) }
+    //состояние
     val state = rememberSwipeToDismissBoxState(
         confirmValueChange = { value ->
             if (value == SwipeToDismissBoxValue.EndToStart) {
@@ -117,8 +128,10 @@ fun <T, R> SwipeToDeleteContainer(
         }
     )
 
+    //запускаем эффект, если изменяется состояние isRemoved
     LaunchedEffect(isRemoved) {
         if (isRemoved) {
+            //отыгрываем анимацию, потом удаляем рейс
             delay(animationDuration.toLong())
             onDelete(item)
         }
@@ -131,6 +144,7 @@ fun <T, R> SwipeToDeleteContainer(
             shrinkTowards = Alignment.Top
         ) + fadeOut()
     ) {
+        //само содержимое
         SwipeToDismissBox(
             state = state,
             backgroundContent = {
@@ -142,14 +156,17 @@ fun <T, R> SwipeToDeleteContainer(
     }
 }
 
+//фон для удаления
 @Composable
 fun DeleteBackground(
     swipeDismiss: SwipeToDismissBoxState
 ) {
+    //цвет фона
     val color = if (swipeDismiss.dismissDirection == SwipeToDismissBoxValue.EndToStart) {
         Color.Red
     } else Color.Transparent
 
+    //иконка с корзиной
     Box(modifier = Modifier
         .fillMaxSize()
         .background(color)

@@ -2,6 +2,7 @@ package com.example.network.models
 
 import com.google.gson.annotations.SerializedName
 
+//данные об авиалинии
 data class ResponseAirline(
     @SerializedName("ageFleet") var ageFleet: Double? = null,
     @SerializedName("airlineId") var airlineId: Int? = null,

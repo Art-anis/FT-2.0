@@ -9,6 +9,7 @@ fun ResponseFutureFlight.toItemUIModel(): FlightItemUIModel {
         departureIata = this.departure?.iataCode ?: "",
         arrivalIata = this.arrival?.iataCode ?: "",
         departureTime = this.departure?.scheduledTime ?: "",
-        arrivalTime = this.arrival?.scheduledTime ?: ""
+        arrivalTime = this.arrival?.scheduledTime ?: "",
+        tracked = false
     )
 }

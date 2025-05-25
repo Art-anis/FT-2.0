@@ -4,6 +4,10 @@
 
     <uses-permission android:name="android.permission.INTERNET"/>
 
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+
     <application
         android:allowBackup="true"
         android:name=".App"
@@ -25,6 +29,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".UpdateDataActivity"
+            android:exported="true"
+            android:theme="@style/Theme.FT"/>
+
+        <service android:name=".update_tracked_data.UpdateTrackedFlightService"
+            android:process=":remote"
+            android:enabled="true" />
+
+        <receiver android:name=".notifications.ScheduledNotification"
+            android:process=":remote"
+            android:enabled="true"/>
     </application>
 
 </manifest>

@@ -8,7 +8,9 @@ import com.example.ft.view_flight.ViewFlightViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
+//модуль app для di
 val appModule = module {
+    //все viewmodel
     viewModel { FlightListViewModel(flightSearchRepository = get()) }
 
     viewModel { AirportsSearchViewModel(repository = get()) }

@@ -1,14 +1,15 @@
 package com.example.network.util
 
 import com.example.network.models.ResponseFutureFlight
-import com.example.network.models.future_flight_subclasses.FutureFlight
+import com.example.network.models.flight_schedule_subclasses.Flight
 import com.example.network.models.future_flight_subclasses.FutureFlightAircraft
-import com.example.network.models.future_flight_subclasses.FutureFlightAirline
-import com.example.network.models.future_flight_subclasses.FutureFlightCodeshared
+import com.example.network.models.flight_subclasses.FlightAirline
+import com.example.network.models.flight_schedule_subclasses.FlightCodeshared
 import com.example.network.models.future_flight_subclasses.FutureFlightDestination
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
+import com.google.gson.JsonNull
 import java.lang.reflect.Type
 
 //кастомный десериализатор для рейсов
@@ -58,7 +59,7 @@ class FlightDeserializer: JsonDeserializer<Array<ResponseFutureFlight>> {
 
                 //данные о главной авиалинии
                 val airlineObject = item.get("airline").asJsonObject
-                val airline = FutureFlightAirline(
+                val airline = FlightAirline(
                     name = airlineObject.get("name").asString,
                     iataCode = airlineObject.get("iataCode").asString,
                     icaoCode = airlineObject.get("icaoCode").asString
@@ -66,20 +67,20 @@ class FlightDeserializer: JsonDeserializer<Array<ResponseFutureFlight>> {
 
                 //данные о рейсе
                 val flightObject = item.get("flight").asJsonObject
-                val flight = FutureFlight(
+                val flight = Flight(
                     number = flightObject.get("number").asString,
                     iataNumber = flightObject.get("iataNumber").asString,
                     icaoNumber = flightObject.get(("icaoNumber")).asString
                 )
 
                 //собираем кодшеринг, если он есть
-                val codeshared = if (item.get("codeshared") == null) null else {
+                val codeshared = if (item.get("codeshared") == JsonNull.INSTANCE || item.get("codeshared") == null) null else {
 
                     val codesharedObject = item.get("codeshared").asJsonObject
 
                     //номер рейса
                     val codesharedFlightObject = codesharedObject.get("flight").asJsonObject
-                    val codesharedFlight = FutureFlight(
+                    val codesharedFlight = Flight(
                         number = codesharedFlightObject.get("number").asString,
                         iataNumber = codesharedFlightObject.get("iataNumber").asString,
                         icaoNumber = codesharedFlightObject.get(("icaoNumber")).asString
@@ -87,13 +88,13 @@ class FlightDeserializer: JsonDeserializer<Array<ResponseFutureFlight>> {
 
                     //авиалиния
                     val codesharedAirlineObject = codesharedObject.get("airline").asJsonObject
-                    val codesharedAirline = FutureFlightAirline(
+                    val codesharedAirline = FlightAirline(
                         name = codesharedAirlineObject.get("name").asString,
                         iataCode = codesharedAirlineObject.get("iataCode").asString,
                         icaoCode = codesharedAirlineObject.get("icaoCode").asString
                     )
 
-                    FutureFlightCodeshared(
+                    FlightCodeshared(
                         airline = codesharedAirline,
                         flight = codesharedFlight
                     )

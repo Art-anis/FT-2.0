@@ -8,7 +8,7 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        minSdk = 24
+        minSdk = 26
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -39,6 +39,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.koin.android)
     implementation(libs.koin.core)
+    implementation(kotlin("reflect"))
     implementation(project(":db"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -2,12 +2,14 @@ package com.example.tracked_flights.util
 
 import com.example.db.entities.TrackedFlightEntity
 
+//конвертация сущности БД в UI-модель
 fun TrackedFlightEntity.toUIModel(
     departureCity: String,
     arrivalCity: String,
     airlineName: String,
     codesharedName: String?
 ): TrackedFlightUIModel {
+    //собираем данные о вылете
     val departure = DestinationData(
         airportIata = this.departureIata,
         cityName = departureCity,
@@ -17,6 +19,7 @@ fun TrackedFlightEntity.toUIModel(
             this.estimatedDeparture else this.scheduledDeparture
     )
 
+    //собираем данные о прибытии
     val arrival = DestinationData(
         airportIata = this.arrivalIata,
         cityName = arrivalCity,
@@ -26,12 +29,14 @@ fun TrackedFlightEntity.toUIModel(
             this.estimatedArrival else this.scheduledArrival
     )
 
+    //собираем данные об авиалинии
     val airline = AirlineData(
         airlineIata = this.airlineIata,
         flightNumber = this.flightIata,
         airlineName = airlineName
     )
 
+    //собираем данные о кодшеринге
     val codeshared = codesharedName?.let {
         AirlineData(
             airlineIata = this.codesharedAirlineIata,
@@ -46,5 +51,6 @@ fun TrackedFlightEntity.toUIModel(
         arrival = arrival,
         airline = airline,
         codeshared = codeshared,
+        status = this.status
     )
 }

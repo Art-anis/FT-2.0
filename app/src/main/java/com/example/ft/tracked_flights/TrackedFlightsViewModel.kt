@@ -6,22 +6,25 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.tracked_flights.TrackedFlightsRepository
 import com.example.tracked_flights.util.TrackedFlightUIModel
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
+//viewmodel для отслеживаемых рейсов
 class TrackedFlightsViewModel(
     private val repository: TrackedFlightsRepository
 ): ViewModel() {
 
+    //список рейсов
     private var _trackedFlightList: MutableLiveData<List<TrackedFlightUIModel>> =
         MutableLiveData(emptyList())
     val trackedFlightList: LiveData<List<TrackedFlightUIModel>>
         get() = _trackedFlightList
 
+    //флаг прогресса загрузки
     private var _loading: MutableLiveData<Boolean> = MutableLiveData(false)
     val loading: LiveData<Boolean>
         get() = _loading
 
+    //получение списка
     fun getFlightList() {
         viewModelScope.launch {
             _loading.value = true
@@ -30,9 +33,10 @@ class TrackedFlightsViewModel(
         }
     }
 
-    suspend fun getTrackedFlight(iata: String, date: Long): TrackedFlightUIModel? {
-        return viewModelScope.async {
-            repository.getTrackedFlight(iata, date)
-        }.await()
+    //удаление рейса
+    fun onDelete(iata: String, date: Long) {
+        viewModelScope.launch {
+            repository.deleteTrackedFlight(iata, date)
+        }
     }
 }

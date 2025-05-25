@@ -7,4 +7,5 @@ data class ViewFlightUIModel(
     val arrival: DestinationData, //данные о месте прибытия
     val airline: AirlineData, //данные об основной авиалинии
     val codeshared: AirlineData?, //данные о кодшеринге, если есть
+    val status: String = "scheduled"
 )

@@ -1,5 +1,8 @@
 package com.example.ft
 
+import android.Manifest
+import android.app.AlarmManager
+import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
 import androidx.activity.ComponentActivity
@@ -26,6 +29,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -35,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -58,6 +63,7 @@ import com.example.ft.navigation.Loading
 import com.example.ft.navigation.MenuItem
 import com.example.ft.navigation.Search
 import com.example.ft.navigation.TrackedFlights
+import com.example.ft.notifications.scheduleService
 import com.example.ft.search.search_airports.AirportSearchScreen
 import com.example.ft.search.search_flights.FlightSearchScreen
 import com.example.ft.tracked_flights.TrackedFlightsScreen
@@ -67,7 +73,9 @@ import com.example.ft.util.sharedViewModel
 import com.example.ft.view_flight.ViewFlightScreen
 import com.example.search_airports.util.AirportUIModel
 import com.example.ft.search.search_flights.FlightsSearchViewModel
+import com.example.tracked_flights.TrackedFlightsRepository
 import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 import kotlin.reflect.typeOf
 
 class MainActivity : ComponentActivity() {
@@ -78,6 +86,30 @@ class MainActivity : ComponentActivity() {
         val pref = PreferenceManager.getDefaultSharedPreferences(baseContext)
         val firstLaunch = pref.getBoolean(baseContext.getString(R.string.first_time_launch_key), true)
 
+        //если первый запуск
+        if (firstLaunch) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                //запрашиваем разрешения
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(
+                        Manifest.permission.POST_NOTIFICATIONS,
+                        Manifest.permission.USE_EXACT_ALARM
+                    ), 89
+                )
+            }
+            val alarmManager = App.getInstance().getSystemService(ALARM_SERVICE) as AlarmManager
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                //запрашиваем разрешения
+                if (!alarmManager.canScheduleExactAlarms()) {
+                    ActivityCompat.requestPermissions(
+                        this,
+                        arrayOf(Manifest.permission.SCHEDULE_EXACT_ALARM), 89
+                    )
+                }
+            }
+        }
+
         enableEdgeToEdge()
         setContent {
             FTTheme {
@@ -85,6 +117,7 @@ class MainActivity : ComponentActivity() {
                 //название topBar
                 var topAppBarTitle by rememberSaveable { mutableStateOf( baseContext.getString(R.string.top_bar_loading)) }
 
+                //состояние боковой панели
                 val drawerState = rememberDrawerState(DrawerValue.Closed)
                 val scope = rememberCoroutineScope()
 
@@ -92,6 +125,7 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 val currentEntry by navController.currentBackStackEntryAsState()
 
+                //навигационный ящик
                 ModalNavigationDrawer(
                     drawerState = drawerState,
                     drawerContent = {
@@ -102,7 +136,9 @@ class MainActivity : ComponentActivity() {
                                 .background(Color.White)
                         ) {
                             Spacer(modifier = Modifier.height(16.dp))
+                            //заголовок
                             DrawerHeader()
+                            //тело
                             DrawerBody(
                                 items = listOf(
                                     MenuItem(
@@ -137,6 +173,7 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 ) {
+                    //тело
                     Scaffold(
                         modifier = Modifier.fillMaxSize(),
                         topBar = {
@@ -156,6 +193,22 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                     ) { innerPadding ->
+
+                        //проверяем, пришли ли мы из отмены отслеживаемого рейса
+                        val fromCancelledNotification = intent.getBooleanExtra("cancelled", false)
+                        if (fromCancelledNotification) {
+                            //получаем репозиторий
+                            val repository = koinInject<TrackedFlightsRepository>()
+                            //извлекаем данные из intent
+                            val date = intent.getLongExtra("date", 0L)
+                            val flightNumber = intent.getStringExtra("flightNumber") ?: ""
+                            //удаляем рейс и переходим в экран отслеживаемых рейсов
+                            LaunchedEffect(Unit) {
+                                repository.deleteTrackedFlight(flightNumber, date)
+                                navController.navigate(TrackedFlights)
+                            }
+                        }
+
                         //хост навигации
                         NavHost(
                             navController = navController, //передаем контроллер
@@ -170,7 +223,9 @@ class MainActivity : ComponentActivity() {
                                 editor.clear()
                                 //возвращаем загрузочный экран как стартовую вершину
                                 Loading
-                            } else Search
+                            } else {
+                                TrackedFlights
+                            }
                         ) {
                             //экран загрузки
                             composable<Loading> {

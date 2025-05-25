@@ -41,7 +41,8 @@ data class FlightData(
     val flightNumber: String, //номер рейса
     val date: Long,
     val departure: String, //название города вылета
-    val arrival: String //название города прибытия
+    val arrival: String, //название города прибытия
+    val tracked: Boolean = false
 )
 
 //окно выбора аэропорта для просмотра его расписания

@@ -25,9 +25,9 @@ fun FlightCard(
     flight: FlightItemUIModel, //рейс
     departureCity: String, //название города вылета
     arrivalCity: String, //название города прибытия
-    date: Long, //дата вылета ,
+    date: Long, //дата вылета
     onNavigateToViewFlight: (FlightData) -> Unit, //функция перехода на экран просмотра рейса
-    showDate: Boolean = false
+    showDate: Boolean = false //отображать дату или нет (для отслеживаемых рейсов)
 ) {
     //контейнер
     Card(
@@ -40,6 +40,7 @@ fun FlightCard(
             .clickable {
                 val (departureHours, departureMinutes) = flight.departureTime.split(":").map { it.toInt() }
 
+                //устанавливаем точное время вылета
                 val calendar = Calendar.getInstance()
                 calendar.timeInMillis = date
                 calendar.set(Calendar.HOUR_OF_DAY, departureHours)
@@ -47,18 +48,20 @@ fun FlightCard(
                 calendar.set(Calendar.SECOND, 0)
                 calendar.set(Calendar.MILLISECOND, 0)
 
+                //переходим на экран просмотра рейса
                 onNavigateToViewFlight(
                     FlightData(
                         flightNumber = flight.flightNumber.uppercase(),
                         departure = departureCity,
                         arrival = arrivalCity,
-                        date = calendar.timeInMillis
+                        date = calendar.timeInMillis,
+                        tracked = flight.tracked
                     )
                 )
             }
     ){
-    //текст с номером рейса
-    if (flight.flightNumber.isNotEmpty()) {
+        //текст с номером рейса и датой вылета
+        if (flight.flightNumber.isNotEmpty()) {
             Row(
                 modifier = Modifier.fillMaxWidth()
                     .padding(
@@ -67,13 +70,15 @@ fun FlightCard(
                         top = 8.dp
                     )
             ) {
+                //отображаем дату, если надо
                 if (showDate) {
-                    val displayDate = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(date)
+                    val displayDate = SimpleDateFormat("dd.MM.yyyy", Locale.ENGLISH).format(date)
                     Text(
                         text = displayDate,
                         modifier = Modifier.padding(end = 16.dp)
                     )
                 }
+                //номер рейса
                 Text(
                     text = flight.flightNumber
                 )
@@ -89,19 +94,23 @@ fun FlightCard(
             FlightCardAirportData(
                 modifier = Modifier
                     .align(Alignment.CenterStart)
+                    .fillMaxWidth(0.5f)
                     .padding(start = 8.dp),
                 city = departureCity,
                 iataCode = flight.departureIata,
-                time = flight.departureTime
+                time = flight.departureTime,
+                alignment = "start"
             )
             //аэропорт прибытия
             FlightCardAirportData(
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
+                    .fillMaxWidth(0.5f)
                     .padding(end = 8.dp),
                 city = arrivalCity,
                 iataCode = flight.arrivalIata,
-                time = flight.arrivalTime
+                time = flight.arrivalTime,
+                alignment = "end"
             )
         }
     }

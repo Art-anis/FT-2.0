@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.ft"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -53,6 +53,7 @@ dependencies {
     implementation(libs.koin.android)
     implementation(libs.koin.core)
     implementation(libs.koin.compose)
+    implementation(libs.com.squareup.retrofit)
     implementation(libs.koin.androidx.compose.navigation)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
@@ -60,6 +61,7 @@ dependencies {
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
+    implementation(kotlin("reflect"))
     implementation(project(":network"))
     implementation(project(":db"))
     implementation(project(":loading"))

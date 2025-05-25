@@ -30,10 +30,10 @@ import coil3.compose.rememberAsyncImagePainter
 import coil3.request.ImageRequest
 import com.example.ft.R
 import com.example.ft.navigation.FlightData
+import com.example.ft.notifications.scheduleReminder
 import com.example.ft.view_flight.airline_codeshared.AirlineAndCodesharedRow
 import com.example.ft.view_flight.route.RouteRow
 import com.example.ft.view_flight.terminal_gate.TermAndGateRow
-import com.example.view_flight.util.ViewFlightUIModel
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import java.text.SimpleDateFormat
@@ -47,7 +47,6 @@ const val AIRLINE_LOGO_URL = "https://pics.avs.io/200/50/"
 @Composable
 fun ViewFlightScreen(
     flightData: FlightData, //данные о рейсе
-    trackedFlight: Boolean = false
 ) {
     //viewmodel
     val viewFlightViewModel = koinViewModel<ViewFlightViewModel>()
@@ -55,11 +54,11 @@ fun ViewFlightScreen(
     //состояние данных о рейсе
     val flight by viewFlightViewModel.flightData.observeAsState()
 
-    var tracked by rememberSaveable { mutableStateOf(trackedFlight) }
+    var tracked by rememberSaveable { mutableStateOf(flightData.tracked) }
 
     //получаем данные из репозитория
     LaunchedEffect(Unit) {
-        if (trackedFlight) {
+        if (flightData.tracked) {
             viewFlightViewModel.getTrackedFlight(flightData.flightNumber, flightData.date)
         }
         else {
@@ -119,7 +118,6 @@ fun ViewFlightScreen(
             }
         }
         else {
-
             //контейнер
             Column {
                 Column(
@@ -131,7 +129,8 @@ fun ViewFlightScreen(
                     //места вылета и прибытия
                     RouteRow(
                         departure = data.departure,
-                        arrival = data.arrival
+                        arrival = data.arrival,
+                        status = data.status
                     )
                     //номера терминалов и выходов
                     TermAndGateRow(
@@ -163,7 +162,7 @@ fun ViewFlightScreen(
                                 val departureGmt = viewFlightViewModel.getGmt(data.departure.iata)?.toInt()
                                 departureGmt?.let {
                                     //получаем локальный gmt
-                                    val localGmt = SimpleDateFormat("ZZZ", Locale.getDefault()).format(System.currentTimeMillis()).substring(0..2).toInt()
+                                    val localGmt = SimpleDateFormat("ZZZ", Locale.ENGLISH).format(System.currentTimeMillis()).substring(0..2).toInt()
                                     //извлекаем часы и минуты из времени вылета
                                     val (hours, minutes) = data.departure.time.split(":").map { it.toInt() }
 
@@ -179,7 +178,7 @@ fun ViewFlightScreen(
                                     calendar.add(Calendar.HOUR_OF_DAY, -departureGmt)
                                     calendar.add(Calendar.HOUR_OF_DAY, localGmt)
 
-                                    viewFlightViewModel.trackFlight(data, flightData.date)
+                                    val id = viewFlightViewModel.trackFlight(data, flightData.date)
 
                                     //intent для календаря
                                     val intent = Intent(Intent.ACTION_INSERT)
@@ -189,7 +188,21 @@ fun ViewFlightScreen(
                                         .putExtra(CalendarContract.Events.DESCRIPTION, "This flight will depart from ${data.departure.iata.uppercase()}, ${flightData.departure}" +
                                                 " and arrive to ${data.arrival.iata.uppercase()}, ${flightData.arrival}")
 
+                                    //обновляем состояние отслеживания
                                     tracked = true
+
+                                    //если прошло успешно, ставим напоминание за неделю до вылета
+                                    if (id != -1) {
+                                        calendar.add(Calendar.DATE, -7)
+                                        scheduleReminder(
+                                            calendar = calendar,
+                                            id = "${id}7".toInt(),
+                                            flightNumber = flight?.flightNumber ?: "",
+                                            airlineIata = flight?.airline?.airlineIata ?: "",
+                                            airportIata = flight?.departure?.iata ?: ""
+                                        )
+                                    }
+
                                     //запускаем календарь
                                     context.startActivity(intent)
                                 }

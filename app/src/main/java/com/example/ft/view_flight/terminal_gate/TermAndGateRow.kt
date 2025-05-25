@@ -28,6 +28,7 @@ fun TermAndGateRow(
             terminal = departureTerminal,
             gate = departureGate
         )
+        //терминал и выход в аэропорте прибытия
         TermAndGateComponent(
             terminal = arrivalTerminal,
             gate = arrivalGate

@@ -157,8 +157,9 @@ class LoadingRepository(
     suspend fun loadAirlines() {
         val result = airlinesAPI.getAllAirlines()
 
+        //фильтруем авиалинии
         result.asSequence().filter {
-            it.sizeAirline != 0 && it.statusAirline == "active" && !it.codeIataAirline.isNullOrEmpty()
+            it.statusAirline == "active" && !it.codeIataAirline.isNullOrEmpty()
         }.forEach {
             airlineDao.addAirline(it.toEntity())
         }

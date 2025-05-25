@@ -23,12 +23,14 @@ fun AirlineAndCodesharedRow(
     codesharedLogo: AsyncImagePainter?
 ) {
     val context = LocalContext.current
+    //контейнер
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 64.dp)
             .padding(horizontal = 16.dp)
     ) {
+        //заголовок секции
         Text(
             text = stringResource(R.string.airline_and_codeshared_header),
             modifier = Modifier.padding(bottom = 16.dp)
@@ -36,11 +38,13 @@ fun AirlineAndCodesharedRow(
         LazyRow(
             modifier = Modifier.fillMaxWidth()
         ) {
+            //данные об основной авиалинии
             airlineDataComponent(
                 data = mainAirline,
                 logo = mainAirlineLogo,
                 airlineStatus = context.getString(R.string.main_airline)
             )
+            //данные о кодшеринге, если он есть
             codeshared?.let {
                 codesharedLogo?.let {
                     airlineDataComponent(

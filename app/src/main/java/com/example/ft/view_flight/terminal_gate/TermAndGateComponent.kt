@@ -55,8 +55,7 @@ fun TermAndGateComponent(
                 modifier = Modifier.padding(bottom = 8.dp)
             )
             Text(
-                text = if (gate.isEmpty()) stringResource(R.string.empty_field)
-                else gate,
+                text = gate.ifEmpty { stringResource(R.string.empty_field) },
                 modifier = Modifier
                     .border(
                         width = 1.dp,

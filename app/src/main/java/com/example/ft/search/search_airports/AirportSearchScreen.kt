@@ -17,7 +17,6 @@ import com.example.search_airports.util.AirportUIModel
 import org.koin.androidx.compose.koinViewModel
 
 //экран поиска аэропортов
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AirportSearchScreen(
     airportType: DestinationType, //вариант назначения

@@ -30,7 +30,7 @@ fun DatePickerComponent(
     //выбор даты
     Text(
         //если даты нет, то выводим плейсхолдер, иначе выводим дату в формате "MMM dd, yyyy"
-        text = SimpleDateFormat(stringResource(R.string.date_format), Locale.getDefault()).format(date),
+        text = SimpleDateFormat(stringResource(R.string.date_format), Locale.ENGLISH).format(date),
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 32.dp)
