@@ -1,6 +1,5 @@
 package com.example.db.entities
 
-import android.util.Log
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
@@ -9,10 +8,11 @@ import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.isAccessible
 
 //отслеживаемые рейсы
-@Entity(tableName = "tracked_flights", indices = [Index(value = ["scheduled_departure", "flight_iata"], unique = true)])
+@Entity(tableName = "tracked_flights", indices = [Index(value = ["scheduled_departure", "flight_iata", "username"], unique = true)])
 data class TrackedFlightEntity(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo("id") val id: Int = 0, //id
+    @ColumnInfo("username") val username: String, //имя пользователя, отслеживающего рейс
     @ColumnInfo("airline_iata") val airlineIata: String, //iata авиалинии
     @ColumnInfo("scheduled_arrival", defaultValue = "0") val scheduledArrival: Long = 0, //время прибытия по расписанию
     @ColumnInfo("estimated_arrival", defaultValue = "0") val estimatedArrival: Long = 0, //ожидаемое или фактическое время прибытия
@@ -46,6 +46,7 @@ data class TrackedFlightEntity(
             if (value1 != value2) {
                 //игнорируем особые случаи
                 if (field.name.contains("scheduled")) continue
+                if (field.name == "username") continue
                 if (field.name == "estimatedDeparture" && (value2 == this.scheduledDeparture || value2 == 0L)) continue
                 if (field.name == "estimatedArrival" && (value2 == this.scheduledArrival || value2 == 0L)) continue
                 //добавление в список

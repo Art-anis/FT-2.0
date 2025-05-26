@@ -5,9 +5,8 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
-import android.util.Log
+import android.preference.PreferenceManager
 import androidx.core.app.NotificationCompat
-import com.example.airport.AirportRepository
 import com.example.db.dao.AirportDao
 import com.example.db.dao.CityDao
 import com.example.db.dao.TrackedFlightDao
@@ -84,14 +83,14 @@ class UpdateTrackedFlightService: Service() {
                                     else apiFlight.departure?.scheduledTime.toMillis()
 
                                 //получаем запись из БД
-                                val dbFlight = dao.getFlightByIata(flightIata, formattedDeparture)
+                                val dbFlights = dao.getFlightByIata(flightIata, formattedDeparture)
 
                                 //получаем фактические времена вылета и прибытия, если есть
                                 val actualDepartureTime = apiFlight.departure?.actualTime.toMillis()
                                 val actualArrivalTime = apiFlight.arrival?.actualTime.toMillis()
 
                                 //если нашли запись
-                                dbFlight?.let {
+                                dbFlights.forEach { dbFlight ->
                                     //конвертируем ответ api в формат БД
                                     val convertedApiFlight = apiFlight.toEntity(dbFlight.id, actualDepartureTime, actualArrivalTime)
 
@@ -125,6 +124,7 @@ class UpdateTrackedFlightService: Service() {
                                             val activityIntent = Intent(context, MainActivity::class.java)
                                             activityIntent.putExtra("flightNumber", flightIata)
                                                 .putExtra("date", dbFlight.scheduledDeparture)
+                                                .putExtra("username", dbFlight.username)
                                                 .putExtra("cancelled", true)
 
                                             val pendingIntent = PendingIntent.getActivity(
@@ -137,7 +137,7 @@ class UpdateTrackedFlightService: Service() {
                                             //собираем уведомление и запускаем его
                                             val notification = NotificationCompat.Builder(App.getInstance().applicationContext, "0")
                                                 .setSmallIcon(R.mipmap.ic_launcher)
-                                                .setContentTitle("Flight $flightIata has been cancelled!")
+                                                .setContentTitle("${dbFlight.username}, flight $flightIata has been cancelled!")
                                                 .setContentText("Click to remove it from your watchlist!")
                                                 .setContentIntent(pendingIntent)
                                                 .setAutoCancel(true)
@@ -169,7 +169,7 @@ class UpdateTrackedFlightService: Service() {
                                             postUpdate(
                                                 id = dbFlight.id,
                                                 intent = pendingIntent,
-                                                title = "Flight $flightIata has taken off!"
+                                                title = "${dbFlight.username}, flight $flightIata has taken off!"
                                             )
                                         }
                                         //иначе просто выводим данные об обновлениях
@@ -188,7 +188,7 @@ class UpdateTrackedFlightService: Service() {
                                             postUpdate(
                                                 id = dbFlight.id,
                                                 intent = pendingIntent,
-                                                title = "Data about flight $flightIata has been updated!"
+                                                title = "${dbFlight.username}, data about flight $flightIata has been updated!"
                                             )
                                         }
                                     }
@@ -300,6 +300,7 @@ class UpdateTrackedFlightService: Service() {
         //собираем сущность БД
         return TrackedFlightEntity(
             id = id,
+            username = "",
             airlineIata = this.airline?.iataCode ?: "",
             scheduledArrival = this.arrival?.scheduledTime.toMillis(),
             estimatedArrival = if (actualArrival == 0L) this.arrival?.estimatedTime.toMillis() else actualArrival,

@@ -7,6 +7,7 @@ import com.example.db.dao.AirlineDao
 import com.example.db.dao.AirportDao
 import com.example.db.dao.CityDao
 import com.example.db.dao.TrackedFlightDao
+import com.example.db.dao.UserDao
 import org.koin.dsl.module
 
 //создание инстанса БД
@@ -35,6 +36,10 @@ fun provideAirlineDao(db: AppDatabase): AirlineDao {
     return db.airlineDao()
 }
 
+fun provideUserDao(db: AppDatabase): UserDao {
+    return db.userDao()
+}
+
 val dbModule = module {
     //БД
     single { provideDb(context = get()) }
@@ -44,4 +49,5 @@ val dbModule = module {
     single { provideCityDao(db = get()) }
     single { provideTrackedFlightDao(db = get()) }
     single { provideAirlineDao(db = get()) }
+    single { provideUserDao(db = get()) }
 }

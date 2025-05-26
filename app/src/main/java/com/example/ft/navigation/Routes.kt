@@ -59,3 +59,7 @@ data class AirportFlightList(
 //просмотр отслеживаемых рейсов
 @Serializable
 data object TrackedFlights
+
+//авторизация
+@Serializable
+data object Auth

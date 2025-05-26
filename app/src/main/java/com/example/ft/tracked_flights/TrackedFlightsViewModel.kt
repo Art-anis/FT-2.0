@@ -1,9 +1,11 @@
 package com.example.ft.tracked_flights
 
+import android.preference.PreferenceManager
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.ft.App
 import com.example.tracked_flights.TrackedFlightsRepository
 import com.example.tracked_flights.util.TrackedFlightUIModel
 import kotlinx.coroutines.launch
@@ -27,16 +29,26 @@ class TrackedFlightsViewModel(
     //получение списка
     fun getFlightList() {
         viewModelScope.launch {
-            _loading.value = true
-            _trackedFlightList.value = repository.getAllTrackedFlights()
-            _loading.value = false
+            //получаем имя пользователя
+            val sharedPref = PreferenceManager.getDefaultSharedPreferences(App.getInstance().applicationContext)
+            val username = sharedPref.getString("activeUser", "")
+            //если все хорошо, добавляем рейс
+            if (!username.isNullOrEmpty()) {
+                _loading.value = true
+                _trackedFlightList.value = repository.getAllTrackedFlights(username)
+                _loading.value = false
+            }
         }
     }
 
     //удаление рейса
     fun onDelete(iata: String, date: Long) {
         viewModelScope.launch {
-            repository.deleteTrackedFlight(iata, date)
+            //получаем имя пользователя
+            val sharedPref = PreferenceManager.getDefaultSharedPreferences(App.getInstance().applicationContext)
+            val username = sharedPref.getString("activeUser", "") ?: ""
+            //удаляем рейс для этого пользователя
+            repository.deleteTrackedFlight(iata, date, username)
         }
     }
 }

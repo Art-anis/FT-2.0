@@ -22,8 +22,8 @@ class TrackedFlightsRepository(
 ) {
 
     //получение всех отслеживаемых рейсов
-    suspend fun getAllTrackedFlights(): List<TrackedFlightUIModel> {
-        val result = trackedFlightDao.getAllFlights()
+    suspend fun getAllTrackedFlights(username: String): List<TrackedFlightUIModel> {
+        val result = trackedFlightDao.getAllFlights(username)
         return result.mapNotNull {
             //получение названий городов
             val departureCity = getCityName(it.departureIata.uppercase())
@@ -53,11 +53,12 @@ class TrackedFlightsRepository(
         departure: DestinationData,
         arrival: DestinationData,
         mainAirline: AirlineData,
-        codeshared: AirlineData?
+        codeshared: AirlineData?,
+        username: String
     ): Int {
-
         //собираем сущность
         val entity = TrackedFlightEntity(
+            username = username,
             airlineIata = mainAirline.airlineIata.uppercase(),
             arrivalGate = arrival.gate,
             arrivalIata = arrival.airportIata.uppercase(),
@@ -77,16 +78,16 @@ class TrackedFlightsRepository(
 
         trackedFlightDao.trackFlight(entity)
         //возвращаем id
-        val result = trackedFlightDao.getFlightByIata(mainAirline.flightNumber, departure.time)
+        val result = trackedFlightDao.getFlightByIata(mainAirline.flightNumber, departure.time).find { it.username == username }
         result?.let {
             return it.id
         } ?: return -1
     }
 
     //обновление рейса
-    suspend fun updateFlight(fields: Map<KProperty1<TrackedFlightEntity, *>, String>, flightNumber: String, date: Long) {
+    suspend fun updateFlight(fields: Map<KProperty1<TrackedFlightEntity, *>, String>, flightNumber: String, date: Long, username: String) {
         //старая запись
-        val oldFlight = trackedFlightDao.getFlightByIata(flightNumber, date)
+        val oldFlight = trackedFlightDao.getFlightByIata(flightNumber, date).find { it.username == username }
 
         //конструктор
         val constructor = TrackedFlightEntity::class.primaryConstructor ?: return
@@ -125,11 +126,16 @@ class TrackedFlightsRepository(
     }
 
     //получение рейса
-    suspend fun getTrackedFlight(iata: String, date: Long): TrackedFlightUIModel? {
+    suspend fun getTrackedFlight(iata: String, date: Long, username: String): TrackedFlightUIModel? {
         //получаем сам рейс
         val result = trackedFlightDao.getFlightByIata(iata, date)
 
-        return result?.let {
+        //выбираем рейс для текущего пользователя
+        val currentFlight = result.find {
+            it.username == username
+        }
+
+        currentFlight?.let {
             //получаем данные о городах
             val departureCity = getCityName(it.departureIata.uppercase())
             val arrivalCity = getCityName(it.arrivalIata.uppercase())
@@ -150,12 +156,12 @@ class TrackedFlightsRepository(
             else {
                 return null
             }
-        }
+        } ?: return null
     }
 
     //удаление рейса
-    suspend fun deleteTrackedFlight(iata: String, date: Long) {
-        trackedFlightDao.deleteTrackedFlight(iata, date)
+    suspend fun deleteTrackedFlight(iata: String, date: Long, username: String) {
+        trackedFlightDao.deleteTrackedFlight(iata, date, username)
     }
 
     //получение названия авиалинии

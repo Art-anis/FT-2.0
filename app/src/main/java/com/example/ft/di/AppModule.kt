@@ -4,6 +4,7 @@ import com.example.ft.flight_list.FlightListViewModel
 import com.example.ft.search.search_airports.AirportsSearchViewModel
 import com.example.ft.search.search_flights.FlightsSearchViewModel
 import com.example.ft.tracked_flights.TrackedFlightsViewModel
+import com.example.ft.users.AuthViewModel
 import com.example.ft.view_flight.ViewFlightViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
@@ -24,4 +25,6 @@ val appModule = module {
         airportRepository = get(),
         trackedFlightsRepository = get()
     ) }
+
+    viewModel { AuthViewModel(repository = get()) }
 }

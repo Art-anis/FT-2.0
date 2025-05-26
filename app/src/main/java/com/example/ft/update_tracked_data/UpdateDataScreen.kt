@@ -1,6 +1,6 @@
 package com.example.ft.update_tracked_data
 
-import android.util.Log
+import android.preference.PreferenceManager
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.rememberAsyncImagePainter
 import coil3.request.ImageRequest
 import com.example.db.entities.TrackedFlightEntity
+import com.example.ft.App
 import com.example.ft.util.TrackedFlightUpdateData
 import com.example.ft.view_flight.AIRLINE_LOGO_URL
 import com.example.tracked_flights.TrackedFlightsRepository
@@ -73,11 +74,16 @@ fun UpdateDataScreen(
             TrackedFlightEntity::class.memberProperties.first { it.name == field.key } to field.value.second
         }.toMap()
 
+        //получаем имя пользователя
+        val sharedPref = PreferenceManager.getDefaultSharedPreferences(App.getInstance().applicationContext)
+        val username = sharedPref.getString("activeUser", "") ?: ""
+
         //обновление рейса
         repository.updateFlight(
             fields = fields,
             flightNumber = flightData.flightNumber,
-            date = flightData.departureTime
+            date = flightData.departureTime,
+            username = username
         )
     }
 

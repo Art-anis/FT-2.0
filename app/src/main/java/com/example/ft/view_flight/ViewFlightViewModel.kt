@@ -1,10 +1,12 @@
 package com.example.ft.view_flight
 
+import android.preference.PreferenceManager
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.airport.AirportRepository
+import com.example.ft.App
 import com.example.ft.util.toViewFlightUIModel
 import com.example.search_flights.FlightsSearchRepository
 import com.example.tracked_flights.TrackedFlightsRepository
@@ -44,7 +46,10 @@ class ViewFlightViewModel(
     //получение отслеживаемого рейса
     fun getTrackedFlight(iata: String, date: Long) {
         viewModelScope.launch {
-            val result = trackedFlightsRepository.getTrackedFlight(iata, date)
+            //получаем имя пользователя
+            val sharedPref = PreferenceManager.getDefaultSharedPreferences(App.getInstance().applicationContext)
+            val username = sharedPref.getString("activeUser", "") ?: ""
+            val result = trackedFlightsRepository.getTrackedFlight(iata, date, username)
             result?.let {
                 _flightData.value = it.toViewFlightUIModel()
             }
@@ -94,21 +99,31 @@ class ViewFlightViewModel(
             )
         }
 
-        //запуск отслеживания рейса
-        return viewModelScope.async {
-            trackedFlightsRepository.trackFlight(
-                departure = departure,
-                arrival = arrival,
-                mainAirline = airline,
-                codeshared = codeshared
-            )
-        }.await()
+        //получаем имя пользователя
+        val sharedPref = PreferenceManager.getDefaultSharedPreferences(App.getInstance().applicationContext)
+        val username = sharedPref.getString("activeUser", "")
+
+        return if (!username.isNullOrEmpty()) {
+            //запуск отслеживания рейса
+            viewModelScope.async {
+                trackedFlightsRepository.trackFlight(
+                    departure = departure,
+                    arrival = arrival,
+                    mainAirline = airline,
+                    codeshared = codeshared,
+                    username = username
+                )
+            }.await()
+        } else -1
     }
 
     //проверка, отслеживаемый ли рейс
     suspend fun checkIfTracked(flightIata: String, date: Long): Boolean {
         val result = viewModelScope.async {
-            trackedFlightsRepository.getTrackedFlight(flightIata, date) != null
+            //получаем пользователя
+            val sharedPref = PreferenceManager.getDefaultSharedPreferences(App.getInstance().applicationContext)
+            val username = sharedPref.getString("activeUser", "") ?: ""
+            trackedFlightsRepository.getTrackedFlight(flightIata, date, username) != null
         }.await()
         return result
     }

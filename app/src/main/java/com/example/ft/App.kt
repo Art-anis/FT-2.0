@@ -11,6 +11,7 @@ import com.example.network.di.networkModule
 import com.example.search_airports.di.searchAirportsModule
 import com.example.search_flights.di.searchFlightsModule
 import com.example.tracked_flights.di.trackedFlightsModule
+import com.example.users.di.userModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -40,7 +41,7 @@ class App: Application() {
 
             modules(listOf(networkModule, dbModule, loadingModule, searchAirportsModule,
                 searchFlightsModule, airportModule,
-                trackedFlightsModule, appModule))
+                trackedFlightsModule, appModule, userModule))
         }
 
         createNotificationChannel()

@@ -12,11 +12,11 @@ interface TrackedFlightDao {
 
     //получение рейса по iata и дате вылета
     @Query("select * from tracked_flights where flight_iata = :iata and (estimated_departure = :date or scheduled_departure = :date)")
-    suspend fun getFlightByIata(iata: String, date: Long): TrackedFlightEntity?
+    suspend fun getFlightByIata(iata: String, date: Long): List<TrackedFlightEntity>
 
     //получение всех рейсов
-    @Query("select * from tracked_flights order by scheduled_departure")
-    suspend fun getAllFlights(): List<TrackedFlightEntity>
+    @Query("select * from tracked_flights where username = :username order by scheduled_departure")
+    suspend fun getAllFlights(username: String): List<TrackedFlightEntity>
 
     //добавление рейса
     @Insert
@@ -27,6 +27,6 @@ interface TrackedFlightDao {
     suspend fun updateFlight(flight: TrackedFlightEntity)
 
     //удаление рейса
-    @Query("delete from tracked_flights where flight_iata = :iata and estimated_departure = :date")
-    suspend fun deleteTrackedFlight(iata: String, date: Long)
+    @Query("delete from tracked_flights where flight_iata = :iata and estimated_departure = :date and username = :username")
+    suspend fun deleteTrackedFlight(iata: String, date: Long, username: String)
 }

@@ -1,7 +1,9 @@
 package com.example.ft.navigation
 
+import android.preference.PreferenceManager
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,16 +15,26 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
 fun DrawerHeader() {
-    Text(
-        text = "Flight Tracker",
-        fontSize = 35.sp,
-        modifier = Modifier.padding(start = 16.dp)
-    )
+    //получаем имя активного пользователя
+    val sharedPref = PreferenceManager.getDefaultSharedPreferences(LocalContext.current)
+    val username = sharedPref.getString("activeUser", "")
+    Column {
+        Text(
+            text = "Flight Tracker",
+            fontSize = 35.sp,
+            modifier = Modifier.padding(start = 16.dp)
+        )
+        //выводим имя текущего пользователя
+        if (!username.isNullOrEmpty()) {
+            Text("Currently logged in as $username")
+        }
+    }
 }
 
 @Composable

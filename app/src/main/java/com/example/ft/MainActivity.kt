@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
@@ -40,6 +41,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
+import androidx.core.content.edit
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -53,6 +55,7 @@ import com.example.ft.loading.LoadingScreen
 import com.example.ft.navigation.AirportFlightList
 import com.example.ft.navigation.AirportSearch
 import com.example.ft.navigation.AirportTimetable
+import com.example.ft.navigation.Auth
 import com.example.ft.navigation.CustomNavType
 import com.example.ft.navigation.DrawerBody
 import com.example.ft.navigation.DrawerHeader
@@ -63,16 +66,16 @@ import com.example.ft.navigation.Loading
 import com.example.ft.navigation.MenuItem
 import com.example.ft.navigation.Search
 import com.example.ft.navigation.TrackedFlights
-import com.example.ft.notifications.scheduleService
 import com.example.ft.search.search_airports.AirportSearchScreen
 import com.example.ft.search.search_flights.FlightSearchScreen
+import com.example.ft.search.search_flights.FlightsSearchViewModel
 import com.example.ft.tracked_flights.TrackedFlightsScreen
 import com.example.ft.ui.theme.FTTheme
+import com.example.ft.users.AuthScreen
 import com.example.ft.util.DestinationType
 import com.example.ft.util.sharedViewModel
 import com.example.ft.view_flight.ViewFlightScreen
 import com.example.search_airports.util.AirportUIModel
-import com.example.ft.search.search_flights.FlightsSearchViewModel
 import com.example.tracked_flights.TrackedFlightsRepository
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
@@ -129,47 +132,76 @@ class MainActivity : ComponentActivity() {
                 ModalNavigationDrawer(
                     drawerState = drawerState,
                     drawerContent = {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth(0.6f)
-                                .fillMaxHeight()
-                                .background(Color.White)
-                        ) {
-                            Spacer(modifier = Modifier.height(16.dp))
-                            //заголовок
-                            DrawerHeader()
-                            //тело
-                            DrawerBody(
-                                items = listOf(
-                                    MenuItem(
-                                        id = stringResource(R.string.search_flights_drawer_id),
-                                        title = stringResource(R.string.search_flights_drawer_value),
-                                        icon = Icons.Filled.Search
+                        //выводим ящик, если мы не в окне авторизации
+                        if (currentEntry?.destination?.route?.contains(Auth::class.java.name) != true) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth(0.6f)
+                                    .fillMaxHeight()
+                                    .background(Color.White)
+                            ) {
+                                Spacer(modifier = Modifier.height(16.dp))
+                                //заголовок
+                                DrawerHeader()
+                                //тело
+                                DrawerBody(
+                                    items = listOf(
+                                        MenuItem(
+                                            id = stringResource(R.string.search_flights_drawer_id),
+                                            title = stringResource(R.string.search_flights_drawer_value),
+                                            icon = Icons.Filled.Search
+                                        ),
+                                        MenuItem(
+                                            id = stringResource(R.string.tracked_flights_drawer_id),
+                                            title = stringResource(R.string.view_tracked_flights_drawer_value),
+                                            icon = Icons.Default.Star
+                                        ),
+                                        MenuItem(
+                                            id = "Sign out",
+                                            title = "Sign out",
+                                            icon = Icons.AutoMirrored.Filled.Logout
+                                        )
                                     ),
-                                    MenuItem(
-                                        id = stringResource(R.string.tracked_flights_drawer_id),
-                                        title = stringResource(R.string.view_tracked_flights_drawer_value),
-                                        icon = Icons.Default.Star
-                                    )
-                                ),
-                                onItemClick = { item ->
-                                    when(item.id) {
-                                        baseContext.getString(R.string.search_flights_drawer_id) -> {
-                                            if (currentEntry?.destination?.route?.contains(FlightSearch::class.java.name) != true) {
-                                                navController.navigate(Search)
-                                            }
-                                        }
-                                        baseContext.getString(R.string.tracked_flights_drawer_id) -> {
-                                            if (currentEntry?.destination?.route?.contains(TrackedFlights.javaClass.name) != true) {
-                                                navController.navigate(TrackedFlights)
+                                    onItemClick = { item ->
+                                        //сначала закрываем ящик, потом переходим
+                                        scope.launch {
+                                            drawerState.close()
+                                            when (item.id) {
+                                                baseContext.getString(R.string.search_flights_drawer_id) -> {
+                                                    if (currentEntry?.destination?.route?.contains(
+                                                            FlightSearch::class.java.name
+                                                        ) != true
+                                                    ) {
+                                                        navController.navigate(Search)
+                                                    }
+                                                }
+
+                                                baseContext.getString(R.string.tracked_flights_drawer_id) -> {
+                                                    if (currentEntry?.destination?.route?.contains(
+                                                            TrackedFlights.javaClass.name
+                                                        ) != true
+                                                    ) {
+                                                        navController.navigate(TrackedFlights)
+                                                    }
+                                                }
+
+                                                "Sign out" -> {
+                                                    val sharedPref = PreferenceManager.getDefaultSharedPreferences(baseContext)
+                                                    sharedPref.edit {
+                                                        remove("activeUser")
+                                                        apply()
+                                                    }
+                                                    navController.navigate(Auth) {
+                                                        popUpTo(currentEntry?.destination?.route ?: "") {
+                                                            inclusive = true
+                                                        }
+                                                    }
+                                                }
                                             }
                                         }
                                     }
-                                    scope.launch {
-                                        drawerState.close()
-                                    }
-                                }
-                            )
+                                )
+                            }
                         }
                     }
                 ) {
@@ -182,12 +214,18 @@ class MainActivity : ComponentActivity() {
                                     Text(topAppBarTitle)
                                 },
                                 navigationIcon = {
-                                    IconButton(onClick = {
-                                        scope.launch {
-                                            drawerState.open()
+                                    //отображаем иконку, если не в окне авторизации
+                                    if (currentEntry?.destination?.route?.contains(Auth::class.java.name) != true) {
+                                        IconButton(onClick = {
+                                            scope.launch {
+                                                drawerState.open()
+                                            }
+                                        }) {
+                                            Icon(
+                                                imageVector = Icons.Filled.Menu,
+                                                contentDescription = null
+                                            )
                                         }
-                                    }) {
-                                        Icon(imageVector = Icons.Filled.Menu, contentDescription = null)
                                     }
                                 }
                             )
@@ -202,9 +240,10 @@ class MainActivity : ComponentActivity() {
                             //извлекаем данные из intent
                             val date = intent.getLongExtra("date", 0L)
                             val flightNumber = intent.getStringExtra("flightNumber") ?: ""
+                            val username = intent.getStringExtra("username") ?: ""
                             //удаляем рейс и переходим в экран отслеживаемых рейсов
                             LaunchedEffect(Unit) {
-                                repository.deleteTrackedFlight(flightNumber, date)
+                                repository.deleteTrackedFlight(flightNumber, date, username)
                                 navController.navigate(TrackedFlights)
                             }
                         }
@@ -224,7 +263,14 @@ class MainActivity : ComponentActivity() {
                                 //возвращаем загрузочный экран как стартовую вершину
                                 Loading
                             } else {
-                                TrackedFlights
+                                //если нет активного пользователя, выводим окно авторизации
+                                val activeUsername = PreferenceManager.getDefaultSharedPreferences(baseContext).getString("activeUser", "")
+                                if (activeUsername.isNullOrEmpty()) {
+                                    Auth
+                                }
+                                else {
+                                    Search
+                                }
                             }
                         ) {
                             //экран загрузки
@@ -233,8 +279,8 @@ class MainActivity : ComponentActivity() {
                                     onNavigateToMain = {
                                         //убираем экран загрузки из стека
                                         navController.popBackStack()
-                                        //переходим на экран поиска
-                                        navController.navigate(Search)
+                                        //переходим на экран авторизации
+                                        navController.navigate(Auth)
                                     }
                                 )
                             }
@@ -344,6 +390,21 @@ class MainActivity : ComponentActivity() {
                             //экран выбора аэропорта для просмотра его расписания
                             composable<AirportTimetable> {
                                 AirportScreen()
+                            }
+
+                            //экран авторизации
+                            composable<Auth> {
+                                topAppBarTitle = "Log in"
+                                AuthScreen(
+                                    firstLaunch = firstLaunch,
+                                    navigateToSearch = {
+                                        navController.navigate(Search) {
+                                            popUpTo(Auth) {
+                                                inclusive = true
+                                            }
+                                        }
+                                    }
+                                )
                             }
                         }
                     }

@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.airport"
+    namespace = "com.example.users"
     compileSdk = 35
 
     defaultConfig {
@@ -37,8 +37,9 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
-    implementation(libs.koin.core)
     implementation(libs.koin.android)
+    implementation(libs.koin.core)
+    implementation(libs.bcrypt)
     implementation(project(":db"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
