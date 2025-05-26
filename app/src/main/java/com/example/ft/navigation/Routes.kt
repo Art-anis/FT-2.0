@@ -54,13 +54,6 @@ data object AirportTimetable
 @Serializable
 data object AirportTimetableSearch
 
-//просмотр расписания аэропорта
-@Serializable
-data class AirportFlightList(
-    val airport: String,
-    val date: Long
-)
-
 //просмотр отслеживаемых рейсов
 @Serializable
 data object TrackedFlights
