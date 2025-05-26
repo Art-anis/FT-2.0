@@ -31,9 +31,9 @@ class ViewFlightViewModel(
         get() = _flightData
 
     //загрузка аэропорта из репозитория
-    fun getFlight(flightNumber: String, departure: String, arrival: String) {
+    fun getFlight(flightNumber: String, departure: String, arrival: String, fromTimetable: Boolean) {
         //ищем рейс в репозитории
-        val result = flightsSearchRepository.findFlight(flightNumber)
+        val result = if (fromTimetable) airportRepository.findFlight(flightNumber) else flightsSearchRepository.findFlight(flightNumber)
         //если нашли, то сохраняем во viewmodel
         result?.let {
             _flightData.value = it.toUIModel(

@@ -6,5 +6,5 @@ import org.koin.dsl.module
 //модуль поиска аэропортов
 val searchAirportsModule = module {
     //репозиторий
-    single { AirportSearchRepository(airportDao = get(), cityDao = get()) }
+    single { AirportSearchRepository(airportDao = get(), cityDao = get(), nearbyApi = get()) }
 }

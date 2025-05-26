@@ -20,7 +20,7 @@ fun LazyListScope.airportSearchResults(
     searchResult: List<AirportUIModel>, //список аэропортов
     loading: Boolean, //состояние загрузки
     query: TextFieldState, //состояние поисковой строки
-    airportType: DestinationType, //тип аэропорта
+    airportType: DestinationType?, //тип аэропорта
     onNavigateBack: () -> Unit, //функция возвращения назад
     viewModel: AirportsSearchViewModel, //viewmodel
     setAirport: (AirportUIModel) -> Boolean //функция выбора аэропорта
@@ -48,6 +48,7 @@ fun LazyListScope.airportSearchResults(
                             context.getString(R.string.departure_repeat), Toast.LENGTH_SHORT).show()
                         DestinationType.ARRIVAL -> Toast.makeText(context,
                             context.getString(R.string.arrival_repeat), Toast.LENGTH_SHORT).show()
+                        else -> {}
                     }
                 }
                 //иначе выбор прошел успешно

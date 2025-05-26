@@ -24,7 +24,7 @@ data class FlightSearch(
 //поиск аэропорта
 @Serializable
 data class AirportSearch(
-    val type: DestinationType
+    val type: DestinationType?
 )
 
 //просмотр результатов поиска
@@ -42,12 +42,17 @@ data class FlightData(
     val date: Long,
     val departure: String, //название города вылета
     val arrival: String, //название города прибытия
-    val tracked: Boolean = false
+    val tracked: Boolean = false,
+    val fromTimetable: Boolean = false
 )
 
-//окно выбора аэропорта для просмотра его расписания
+//родительская вершина для графа расписания аэропортов
 @Serializable
 data object AirportTimetable
+
+//экран поиска аэропорта для просмотра его расписания
+@Serializable
+data object AirportTimetableSearch
 
 //просмотр расписания аэропорта
 @Serializable

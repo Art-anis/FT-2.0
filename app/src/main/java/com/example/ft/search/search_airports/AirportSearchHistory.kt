@@ -25,7 +25,7 @@ import com.example.search_airports.util.AirportUIModel
 //история поиска аэропортов
 fun LazyListScope.airportSearchHistory(
     history: List<AirportUIModel>, //история поиска
-    airportType: DestinationType, //тип аэропорта
+    airportType: DestinationType?, //тип аэропорта
     onNavigateBack: () -> Unit, //функция возвращения назад
     viewModel: AirportsSearchViewModel, //viewmodel
     setAirport: (AirportUIModel) -> Boolean //функция выбора аэропорта
@@ -50,6 +50,7 @@ fun LazyListScope.airportSearchHistory(
                                 context.getString(R.string.departure_repeat), Toast.LENGTH_SHORT).show()
                             DestinationType.ARRIVAL -> Toast.makeText(context,
                                 context.getString(R.string.arrival_repeat), Toast.LENGTH_SHORT).show()
+                            else -> {}
                         }
                     }
                     //иначе выбор прошел успешно

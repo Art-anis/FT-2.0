@@ -65,7 +65,8 @@ fun ViewFlightScreen(
             viewFlightViewModel.getFlight(
                 flightNumber = flightData.flightNumber,
                 departure = flightData.departure,
-                arrival = flightData.arrival
+                arrival = flightData.arrival,
+                fromTimetable = flightData.fromTimetable,
             )
         }
 

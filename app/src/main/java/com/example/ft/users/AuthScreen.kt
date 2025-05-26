@@ -36,7 +36,6 @@ fun AuthScreen(
     firstLaunch: Boolean, //флаг первого запуска
     navigateToSearch: () -> Unit //переход после успешной регистрации/входа
 ) {
-
     //viewmodel
     val viewmodel = koinInject<AuthViewModel>()
     

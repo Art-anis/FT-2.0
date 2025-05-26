@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.filled.FlightTakeoff
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
@@ -49,12 +50,12 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.example.ft.airport_timetable.AirportScreen
-import com.example.ft.airport_timetable.AirportTimetableScreen
+import com.example.ft.airport_timetable.AirportTimetableViewModel
 import com.example.ft.flight_list.FlightListScreen
 import com.example.ft.loading.LoadingScreen
-import com.example.ft.navigation.AirportFlightList
 import com.example.ft.navigation.AirportSearch
 import com.example.ft.navigation.AirportTimetable
+import com.example.ft.navigation.AirportTimetableSearch
 import com.example.ft.navigation.Auth
 import com.example.ft.navigation.CustomNavType
 import com.example.ft.navigation.DrawerBody
@@ -97,7 +98,9 @@ class MainActivity : ComponentActivity() {
                     this,
                     arrayOf(
                         Manifest.permission.POST_NOTIFICATIONS,
-                        Manifest.permission.USE_EXACT_ALARM
+                        Manifest.permission.USE_EXACT_ALARM,
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
                     ), 89
                 )
             }
@@ -107,7 +110,7 @@ class MainActivity : ComponentActivity() {
                 if (!alarmManager.canScheduleExactAlarms()) {
                     ActivityCompat.requestPermissions(
                         this,
-                        arrayOf(Manifest.permission.SCHEDULE_EXACT_ALARM), 89
+                        arrayOf(Manifest.permission.SCHEDULE_EXACT_ALARM), 90
                     )
                 }
             }
@@ -160,6 +163,11 @@ class MainActivity : ComponentActivity() {
                                             id = "Sign out",
                                             title = "Sign out",
                                             icon = Icons.AutoMirrored.Filled.Logout
+                                        ),
+                                        MenuItem(
+                                            id = "Airport timetable",
+                                            title = "View airport timetable",
+                                            icon = Icons.Default.FlightTakeoff
                                         )
                                     ),
                                     onItemClick = { item ->
@@ -195,6 +203,15 @@ class MainActivity : ComponentActivity() {
                                                         popUpTo(currentEntry?.destination?.route ?: "") {
                                                             inclusive = true
                                                         }
+                                                    }
+                                                }
+
+                                                "Airport timetable" -> {
+                                                    if (currentEntry?.destination?.route?.contains(
+                                                            AirportTimetableSearch.javaClass.name
+                                                        ) != true
+                                                    ) {
+                                                        navController.navigate(AirportTimetable)
                                                     }
                                                 }
                                             }
@@ -327,7 +344,7 @@ class MainActivity : ComponentActivity() {
                                         onNavigateBack = {
                                             navController.popBackStack()
                                         },
-                                        airportType = type,
+                                        airportType = type!!,
                                         setAirport = { airport ->
                                             when(type) {
                                                 DestinationType.DEPARTURE -> viewModel.setDeparture(airport)
@@ -382,14 +399,38 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
 
-                            //экран расписания аэропорта
-                            composable<AirportFlightList> {
-                                AirportTimetableScreen()
-                            }
+                            //граф расписания аэропорта
+                            navigation<AirportTimetable>(
+                                startDestination = AirportTimetableSearch
+                            ) {
+                                //экран выбора аэропорта для просмотра его расписания
+                                composable<AirportTimetableSearch> { entry ->
+                                    topAppBarTitle = "Airport Timetable"
+                                    val viewModel = entry.sharedViewModel<AirportTimetableViewModel>(navController)
+                                    AirportScreen(
+                                        onNavigateToAirportSearch = {
+                                            navController.navigate(AirportSearch(null))
+                                        },
+                                        viewModel = viewModel,
+                                        onNavigateToViewFlight = { flightData ->
+                                            navController.navigate(flightData)
+                                        }
+                                    )
+                                }
 
-                            //экран выбора аэропорта для просмотра его расписания
-                            composable<AirportTimetable> {
-                                AirportScreen()
+                                composable<AirportSearch> { entry ->
+                                    topAppBarTitle = "Search Airport"
+                                    val viewModel = entry.sharedViewModel<AirportTimetableViewModel>(navController)
+                                    AirportSearchScreen(
+                                        airportType = null,
+                                        onNavigateBack = {
+                                            navController.popBackStack()
+                                        },
+                                        setAirport = { airport ->
+                                            viewModel.setAirport(airport)
+                                        }
+                                    )
+                                }
                             }
 
                             //экран авторизации

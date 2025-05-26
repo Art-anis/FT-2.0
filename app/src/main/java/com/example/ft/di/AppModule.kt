@@ -1,5 +1,6 @@
 package com.example.ft.di
 
+import com.example.ft.airport_timetable.AirportTimetableViewModel
 import com.example.ft.flight_list.FlightListViewModel
 import com.example.ft.search.search_airports.AirportsSearchViewModel
 import com.example.ft.search.search_flights.FlightsSearchViewModel
@@ -27,4 +28,6 @@ val appModule = module {
     ) }
 
     viewModel { AuthViewModel(repository = get()) }
+
+    viewModel { AirportTimetableViewModel(repository = get()) }
 }

@@ -27,7 +27,8 @@ fun FlightCard(
     arrivalCity: String, //название города прибытия
     date: Long, //дата вылета
     onNavigateToViewFlight: (FlightData) -> Unit, //функция перехода на экран просмотра рейса
-    showDate: Boolean = false //отображать дату или нет (для отслеживаемых рейсов)
+    showDate: Boolean = false, //отображать дату или нет (для отслеживаемых рейсов)
+    fromTimetable: Boolean = false
 ) {
     //контейнер
     Card(
@@ -55,7 +56,8 @@ fun FlightCard(
                         departure = departureCity,
                         arrival = arrivalCity,
                         date = calendar.timeInMillis,
-                        tracked = flight.tracked
+                        tracked = flight.tracked,
+                        fromTimetable = fromTimetable
                     )
                 )
             }

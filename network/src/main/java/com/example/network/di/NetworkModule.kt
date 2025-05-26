@@ -4,6 +4,7 @@ import com.example.network.api.AirlinesAPI
 import com.example.network.api.AirportsAPI
 import com.example.network.api.FlightScheduleAPI
 import com.example.network.api.FutureFlightsAPI
+import com.example.network.api.NearbyAPI
 import com.example.network.models.ResponseFlightSchedule
 import com.example.network.models.ResponseFutureFlight
 import com.example.network.util.FlightDeserializer
@@ -47,6 +48,10 @@ fun provideFlightScheduleAPI(retrofit: Retrofit): FlightScheduleAPI {
     return retrofit.create(FlightScheduleAPI::class.java)
 }
 
+fun provideNearbyApi(retrofit: Retrofit): NearbyAPI {
+    return retrofit.create(NearbyAPI::class.java)
+}
+
 //сетевой модуль
 val networkModule = module {
     //базовый URL
@@ -60,5 +65,6 @@ val networkModule = module {
     single { provideFlightsAPI(retrofit = get()) }
     single { provideAirlinesAPI(retrofit = get()) }
     single { provideFlightScheduleAPI(retrofit = get()) }
+    single { provideNearbyApi(retrofit = get()) }
 
 }
