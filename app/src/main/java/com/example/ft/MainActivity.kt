@@ -136,7 +136,8 @@ class MainActivity : ComponentActivity() {
                     drawerState = drawerState,
                     drawerContent = {
                         //выводим ящик, если мы не в окне авторизации
-                        if (currentEntry?.destination?.route?.contains(Auth::class.java.name) != true) {
+                        val route = currentEntry?.destination?.route
+                        if (route?.contains(Auth::class.java.name) != true && route?.contains(Loading::class.java.name) != true) {
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth(0.6f)
@@ -232,7 +233,8 @@ class MainActivity : ComponentActivity() {
                                 },
                                 navigationIcon = {
                                     //отображаем иконку, если не в окне авторизации
-                                    if (currentEntry?.destination?.route?.contains(Auth::class.java.name) != true) {
+                                    val route = currentEntry?.destination?.route
+                                    if (route?.contains(Auth::class.java.name) != true && route?.contains(Loading::class.java.name) != true) {
                                         IconButton(onClick = {
                                             scope.launch {
                                                 drawerState.open()

@@ -97,20 +97,19 @@ fun LoadingScreen(
             //текст, уведомляющий пользователя о загрузке данных
             Text(
                 text = stringResource(R.string.loading_notification),
-                modifier = Modifier.padding(horizontal = 16.dp),
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
                 textAlign = TextAlign.Center
             )
             //индикатор загрузки
-            LoadingAnimation(modifier = Modifier.size(100.dp)
-                .padding(vertical = 16.dp))
+            LoadingAnimation(modifier = Modifier.size(100.dp))
             //текст прогресса
-            Text(text = "%.2f".format(progress * 100) + "%",)
+            Text(text = "%.2f".format(progress * 100) + "%", modifier = Modifier.padding(top = 16.dp))
         }
         //загрузка готова, пользователь может идти дальше
         else {
             Text(
                 text = stringResource(R.string.loading_done),
-                modifier = Modifier.padding(bottom = 16.dp)
+                modifier = Modifier.padding(vertical = 16.dp)
             )
             Button(onClick = onNavigateToMain) {
                 Text(text = stringResource(R.string.loaded_btn))
