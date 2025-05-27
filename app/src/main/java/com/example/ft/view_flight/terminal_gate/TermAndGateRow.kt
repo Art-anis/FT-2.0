@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.ft.util.DestinationType
 
 @Composable
 fun TermAndGateRow(
@@ -19,19 +20,21 @@ fun TermAndGateRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 64.dp)
+            .padding(top = 16.dp)
             .padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         //терминал и выход в аэропорте вылета
         TermAndGateComponent(
             terminal = departureTerminal,
-            gate = departureGate
+            gate = departureGate,
+            type = DestinationType.DEPARTURE
         )
         //терминал и выход в аэропорте прибытия
         TermAndGateComponent(
             terminal = arrivalTerminal,
-            gate = arrivalGate
+            gate = arrivalGate,
+            type = DestinationType.ARRIVAL
         )
     }
 }

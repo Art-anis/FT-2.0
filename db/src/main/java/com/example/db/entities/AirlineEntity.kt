@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "airlines")
 data class AirlineEntity(
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo("id") val id: Int = 0,
+    @ColumnInfo("id") val airlineId: Int = 0,
     @ColumnInfo("iata_code") val iataCode: String, //iata
     @ColumnInfo("icao_code") val icaoCode: String, //icao
     @ColumnInfo("name") val name: String //название

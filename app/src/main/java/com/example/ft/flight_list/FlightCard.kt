@@ -6,14 +6,19 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import com.example.flight_list.util.FlightItemUIModel
+import com.example.ft.R
 import com.example.ft.navigation.FlightData
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -37,6 +42,7 @@ fun FlightCard(
                 horizontal = 32.dp,
                 vertical = 16.dp
             )
+            .shadow(elevation = 5.dp, shape = RoundedCornerShape(10.dp))
             //при нажатии на карточку переходим на экран просмотра
             .clickable {
                 val (departureHours, departureMinutes) = flight.departureTime.split(":").map { it.toInt() }
@@ -60,7 +66,10 @@ fun FlightCard(
                         fromTimetable = fromTimetable
                     )
                 )
-            }
+            },
+        colors = CardDefaults.cardColors(
+            containerColor = colorResource(R.color.top_bar_color)
+        )
     ){
         //текст с номером рейса и датой вылета
         if (flight.flightNumber.isNotEmpty()) {
@@ -68,9 +77,10 @@ fun FlightCard(
                 modifier = Modifier.fillMaxWidth()
                     .padding(
                         start = 8.dp,
-                        bottom = 16.dp,
+                        bottom = 8.dp,
                         top = 8.dp
-                    )
+                    ),
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 //отображаем дату, если надо
                 if (showDate) {
@@ -97,7 +107,7 @@ fun FlightCard(
                 modifier = Modifier
                     .align(Alignment.CenterStart)
                     .fillMaxWidth(0.5f)
-                    .padding(start = 8.dp),
+                    .padding(start = 8.dp, top = 8.dp),
                 city = departureCity,
                 iataCode = flight.departureIata,
                 time = flight.departureTime,

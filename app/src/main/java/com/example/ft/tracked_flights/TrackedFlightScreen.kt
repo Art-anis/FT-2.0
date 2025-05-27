@@ -1,5 +1,6 @@
 package com.example.ft.tracked_flights
 
+import android.preference.PreferenceManager
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeOut
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -31,11 +33,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.ft.R
 import com.example.ft.flight_list.FlightCard
 import com.example.ft.navigation.FlightData
+import com.example.ft.util.SubHeader
 import com.example.ft.util.toFlightItemUIModel
 import kotlinx.coroutines.delay
 import org.koin.androidx.compose.koinViewModel
@@ -72,33 +76,43 @@ fun TrackedFlightsScreen(
     }
     //иначе отображаем список
     else {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            items(flightList ?: emptyList(), key = { item -> "${item.flightNumber} - ${item.departure.time}"}) { flight ->
-                //контейнер
-                SwipeToDeleteContainer(
-                    item = flight.toFlightItemUIModel(),
-                    //при свайпе удаляем запись
-                    onDelete = {
-                        viewModel.onDelete(flight.flightNumber, flight.departure.time)
-                    },
-                    departureCity = flight.departure.cityName,
-                    arrivalCity = flight.arrival.cityName,
-                    date = flight.departure.time,
-                    onNavigateToViewFlight = onNavigateToViewFlight,
-                    //содержимое
-                    content = { item, depCity, arrCity, date, nav ->
-                        FlightCard(
-                            flight = item,
-                            departureCity = depCity,
-                            arrivalCity = arrCity,
-                            date = date,
-                            showDate = true,
-                            onNavigateToViewFlight = nav
-                        )
-                    },
-                )
+        Column {
+            val sharedPref = PreferenceManager.getDefaultSharedPreferences(LocalContext.current)
+            val username = sharedPref.getString("activeUser", "")
+
+            SubHeader(
+                modifier = Modifier.fillMaxWidth()
+                    .padding(top = 32.dp, bottom = 8.dp),
+                text = "Viewing $username's tracked flights"
+            )
+            LazyColumn(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                items(flightList ?: emptyList(), key = { item -> "${item.flightNumber} - ${item.departure.time}"}) { flight ->
+                    //контейнер
+                    SwipeToDeleteContainer(
+                        item = flight.toFlightItemUIModel(),
+                        //при свайпе удаляем запись
+                        onDelete = {
+                            viewModel.onDelete(flight.flightNumber, flight.departure.time)
+                        },
+                        departureCity = flight.departure.cityName,
+                        arrivalCity = flight.arrival.cityName,
+                        date = flight.departure.time,
+                        onNavigateToViewFlight = onNavigateToViewFlight,
+                        //содержимое
+                        content = { item, depCity, arrCity, date, nav ->
+                            FlightCard(
+                                flight = item,
+                                departureCity = depCity,
+                                arrivalCity = arrCity,
+                                date = date,
+                                showDate = true,
+                                onNavigateToViewFlight = nav
+                            )
+                        },
+                    )
+                }
             }
         }
     }

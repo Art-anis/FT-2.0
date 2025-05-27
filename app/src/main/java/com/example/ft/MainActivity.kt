@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.FlightTakeoff
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
@@ -30,6 +29,7 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -38,7 +38,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
@@ -65,6 +67,7 @@ import com.example.ft.navigation.FlightListSearchData
 import com.example.ft.navigation.FlightSearch
 import com.example.ft.navigation.Loading
 import com.example.ft.navigation.MenuItem
+import com.example.ft.navigation.NavigationHost
 import com.example.ft.navigation.Search
 import com.example.ft.navigation.TrackedFlights
 import com.example.ft.search.search_airports.AirportSearchScreen
@@ -144,11 +147,22 @@ class MainActivity : ComponentActivity() {
                                     .fillMaxHeight()
                                     .background(Color.White)
                             ) {
-                                Spacer(modifier = Modifier.height(16.dp))
                                 //заголовок
                                 DrawerHeader()
                                 //тело
                                 DrawerBody(
+                                    selected = if(currentEntry?.destination?.route?.contains(FlightSearch::class.java.name) == true) {
+                                        stringResource(R.string.search_flights_drawer_id)
+                                    }
+                                    else if (currentEntry?.destination?.route?.contains(AirportTimetableSearch::class.java.name) == true) {
+                                        stringResource(R.string.airport_timetable_drawer_id)
+                                    }
+                                    else if (currentEntry?.destination?.route?.contains(TrackedFlights::class.java.name) == true) {
+                                        stringResource(R.string.tracked_flights_drawer_id)
+                                    }
+                                    else {
+                                        ""
+                                    },
                                     items = listOf(
                                         MenuItem(
                                             id = stringResource(R.string.search_flights_drawer_id),
@@ -161,13 +175,8 @@ class MainActivity : ComponentActivity() {
                                             icon = Icons.Default.Star
                                         ),
                                         MenuItem(
-                                            id = "Sign out",
-                                            title = "Sign out",
-                                            icon = Icons.AutoMirrored.Filled.Logout
-                                        ),
-                                        MenuItem(
-                                            id = "Airport timetable",
-                                            title = "View airport timetable",
+                                            id = stringResource(R.string.airport_timetable_drawer_id),
+                                            title = stringResource(R.string.airport_timetable_drawer_title),
                                             icon = Icons.Default.FlightTakeoff
                                         )
                                     ),
@@ -194,19 +203,6 @@ class MainActivity : ComponentActivity() {
                                                     }
                                                 }
 
-                                                "Sign out" -> {
-                                                    val sharedPref = PreferenceManager.getDefaultSharedPreferences(baseContext)
-                                                    sharedPref.edit {
-                                                        remove("activeUser")
-                                                        apply()
-                                                    }
-                                                    navController.navigate(Auth) {
-                                                        popUpTo(currentEntry?.destination?.route ?: "") {
-                                                            inclusive = true
-                                                        }
-                                                    }
-                                                }
-
                                                 "Airport timetable" -> {
                                                     if (currentEntry?.destination?.route?.contains(
                                                             AirportTimetableSearch.javaClass.name
@@ -215,6 +211,18 @@ class MainActivity : ComponentActivity() {
                                                         navController.navigate(AirportTimetable)
                                                     }
                                                 }
+                                            }
+                                        }
+                                    },
+                                    signOut = {
+                                        val sharedPref = PreferenceManager.getDefaultSharedPreferences(baseContext)
+                                        sharedPref.edit {
+                                            remove("activeUser")
+                                            apply()
+                                        }
+                                        navController.navigate(Auth) {
+                                            popUpTo(currentEntry?.destination?.route ?: "") {
+                                                inclusive = true
                                             }
                                         }
                                     }
@@ -228,6 +236,11 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.fillMaxSize(),
                         topBar = {
                             TopAppBar(
+                                modifier = Modifier.shadow(elevation = 5.dp,
+                                    spotColor = Color.DarkGray),
+                                colors = TopAppBarDefaults.topAppBarColors(
+                                    containerColor = colorResource(R.color.top_bar_color)
+                                ),
                                 title = {
                                     Text(topAppBarTitle)
                                 },
@@ -267,189 +280,17 @@ class MainActivity : ComponentActivity() {
                             }
                         }
 
-                        //хост навигации
-                        NavHost(
-                            navController = navController, //передаем контроллер
-                            modifier = Modifier.padding(innerPadding), //задаем отступы
-                            //определяем начальный узел графа в зависимости от того, первый ли это запуск
-                            startDestination = if (firstLaunch) {
-                                //если это был первый запуск, устанавливаем флаг в false
-                                val editor = pref.edit()
-                                editor
-                                    .putBoolean(baseContext.getString(R.string.first_time_launch_key), false)
-                                    .apply()
-                                editor.clear()
-                                //возвращаем загрузочный экран как стартовую вершину
-                                Loading
-                            } else {
-                                //если нет активного пользователя, выводим окно авторизации
-                                val activeUsername = PreferenceManager.getDefaultSharedPreferences(baseContext).getString("activeUser", "")
-                                if (activeUsername.isNullOrEmpty()) {
-                                    Auth
-                                }
-                                else {
-                                    Search
-                                }
+                        NavigationHost(
+                            navController = navController,
+                            innerPadding = innerPadding,
+                            intent = intent,
+                            firstLaunch = firstLaunch,
+                            pref = pref,
+                            updateTitle = {
+                                topAppBarTitle = it
                             }
-                        ) {
-                            //экран загрузки
-                            composable<Loading> {
-                                LoadingScreen(
-                                    onNavigateToMain = {
-                                        //убираем экран загрузки из стека
-                                        navController.popBackStack()
-                                        //переходим на экран авторизации
-                                        navController.navigate(Auth)
-                                    }
-                                )
-                            }
+                        )
 
-                            //вложенный навигационный граф для поиска
-                            navigation<Search>(
-                                startDestination = FlightSearch()
-                            ) {
-                                //экран поиска рейсов
-                                composable<FlightSearch> { entry ->
-                                    //обновление заголовка
-                                    topAppBarTitle = stringResource(R.string.top_bar_search_flights)
-
-                                    //получение общей viewmodel
-                                    val viewModel = entry.sharedViewModel<FlightsSearchViewModel>(navController)
-                                    //сам экран
-                                    FlightSearchScreen(
-                                        viewModel = viewModel,
-                                        onNavigateToAirportSearch = { type ->
-                                            //переходим на экран поиска аэропорта
-                                            navController.navigate(AirportSearch(type))
-                                        },
-                                        onLaunchSearch = { departure, arrival, date ->
-                                            //переходи на экран просмотра списка рейсов
-                                            navController.navigate(FlightListSearchData(
-                                                departure = departure,
-                                                arrival = arrival,
-                                                date = date.time
-                                            ))
-                                        }
-                                    )
-                                }
-
-                                //экран поиска аэропортов
-                                composable<AirportSearch> { entry ->
-                                    //обновление заголовка
-                                    topAppBarTitle = stringResource(R.string.top_bar_search_airport)
-
-                                    //получение общей viewmodel
-                                    val viewModel = entry.sharedViewModel<FlightsSearchViewModel>(navController)
-                                    val type = entry.toRoute<AirportSearch>().type
-                                    //сам экран
-                                    AirportSearchScreen(
-                                        onNavigateBack = {
-                                            navController.popBackStack()
-                                        },
-                                        airportType = type!!,
-                                        setAirport = { airport ->
-                                            when(type) {
-                                                DestinationType.DEPARTURE -> viewModel.setDeparture(airport)
-                                                DestinationType.ARRIVAL -> viewModel.setArrival(airport)
-                                            }
-                                        }
-                                    )
-                                }
-                            }
-
-                            //экран просмотра результатов поиска
-                            composable<FlightListSearchData>(
-                                typeMap = mapOf(typeOf<AirportUIModel>() to CustomNavType.AirportNavType)
-                            ) { entry ->
-                                //данные для поиска
-                                val data = entry.toRoute<FlightListSearchData>()
-
-                                //обновление заголовка
-                                topAppBarTitle = "${data.departure.cityName} - ${data.arrival.cityName}"
-
-                                //сам экран
-                                FlightListScreen(
-                                    searchData = data,
-                                    departureCityName = data.departure.cityName,
-                                    arrivalCityName = data.arrival.cityName,
-                                    onNavigateToViewFlight = { flightData ->
-                                        navController.navigate(flightData)
-                                    }
-                                )
-                            }
-
-                            //экран просмотра данных о рейсе
-                            composable<FlightData>(
-                                typeMap = mapOf(typeOf<FlightData>() to CustomNavType.FlightNavType)
-                            ) { entry ->
-                                val flightData = entry.toRoute<FlightData>()
-
-                                topAppBarTitle = flightData.flightNumber
-                                ViewFlightScreen(
-                                    flightData = flightData
-                                )
-                            }
-
-                            //экран просмотра
-                            composable<TrackedFlights> {
-                                topAppBarTitle = stringResource(R.string.tracked_flights_title)
-
-                                TrackedFlightsScreen(
-                                    onNavigateToViewFlight = { flightData ->
-                                        navController.navigate(flightData)
-                                    }
-                                )
-                            }
-
-                            //граф расписания аэропорта
-                            navigation<AirportTimetable>(
-                                startDestination = AirportTimetableSearch
-                            ) {
-                                //экран выбора аэропорта для просмотра его расписания
-                                composable<AirportTimetableSearch> { entry ->
-                                    topAppBarTitle = "Airport Timetable"
-                                    val viewModel = entry.sharedViewModel<AirportTimetableViewModel>(navController)
-                                    AirportScreen(
-                                        onNavigateToAirportSearch = {
-                                            navController.navigate(AirportSearch(null))
-                                        },
-                                        viewModel = viewModel,
-                                        onNavigateToViewFlight = { flightData ->
-                                            navController.navigate(flightData)
-                                        }
-                                    )
-                                }
-
-                                composable<AirportSearch> { entry ->
-                                    topAppBarTitle = "Search Airport"
-                                    val viewModel = entry.sharedViewModel<AirportTimetableViewModel>(navController)
-                                    AirportSearchScreen(
-                                        airportType = null,
-                                        onNavigateBack = {
-                                            navController.popBackStack()
-                                        },
-                                        setAirport = { airport ->
-                                            viewModel.setAirport(airport)
-                                        }
-                                    )
-                                }
-                            }
-
-                            //экран авторизации
-                            composable<Auth> {
-                                topAppBarTitle = "Log in"
-                                AuthScreen(
-                                    firstLaunch = firstLaunch,
-                                    navigateToSearch = {
-                                        navController.navigate(Search) {
-                                            popUpTo(Auth) {
-                                                inclusive = true
-                                            }
-                                        }
-                                    }
-                                )
-                            }
-                        }
                     }
                 }
             }

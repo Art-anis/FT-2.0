@@ -44,7 +44,7 @@ data class FlightData(
     val arrival: String, //название города прибытия
     val tracked: Boolean = false,
     val fromTimetable: Boolean = false
-)
+): java.io.Serializable
 
 //родительская вершина для графа расписания аэропортов
 @Serializable

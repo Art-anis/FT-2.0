@@ -78,6 +78,10 @@ class AirportsSearchViewModel(
 
     //очищаем поиск
     fun clearSearch() {
+        if (_airportSearchState.value?.loading == true) {
+            loadingJob.cancel()
+            _airportSearchState.value?.loading = false
+        }
         _airportSearchState.value = _airportSearchState.value?.copy(searchResult = listOf())
     }
 

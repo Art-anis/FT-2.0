@@ -1,8 +1,10 @@
 package com.example.ft.search.search_airports
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.clearText
@@ -16,6 +18,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -32,7 +38,9 @@ fun AirportSearchBar(
     //поисковая строка
     Row(
         modifier = Modifier.fillMaxWidth()
-            .padding(bottom = 32.dp)
+            .padding(bottom = 16.dp)
+            .background(color = colorResource(R.color.light_blue))
+            .padding(vertical = 32.dp)
     ) {
         //кнопка "Назад"
         IconButton(onClick = {
@@ -44,22 +52,33 @@ fun AirportSearchBar(
                 contentDescription = null
             )
         }
+        val focusRequester = FocusRequester()
+        val focusManager = LocalFocusManager.current
         //поисковое поле
         TextField(
             //размеры
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(end = 32.dp),
+                .padding(end = 32.dp)
+                .focusRequester(focusRequester),
             //значение
             value = query.text.toString(),
             //в одну строку
             singleLine = true,
             //определяем действие при нажатии Enter
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(onDone = {
+                focusManager.clearFocus()
+            }),
             //обновление состояния текста
             onValueChange = {
                 query.edit { replace(0, length, it) }
-                searchAirports(query.text.toString())
+                if (query.text.isNotEmpty()) {
+                    searchAirports(query.text.toString())
+                }
+                else {
+                    clearSearch()
+                }
             },
             //ведущая иконка
             leadingIcon = {

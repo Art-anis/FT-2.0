@@ -5,6 +5,7 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.example.db.dao.AirportDao
 import com.example.db.dao.CityDao
@@ -156,6 +157,7 @@ class UpdateTrackedFlightService: Service() {
                                                 .putExtra("arrival", Pair(arrivalCity ?: "", dbFlight.arrivalIata))
                                                 .putExtra("differences", HashMap(differences) as Serializable)
                                                 .putExtra("departureTime", dbFlight.scheduledDeparture)
+                                                .putExtra("message", "Flight has taken off!")
 
                                             val pendingIntent = PendingIntent.getActivity(
                                                 context,
@@ -180,6 +182,7 @@ class UpdateTrackedFlightService: Service() {
                                                 .putExtra("departure", Pair(departureCity ?: "", dbFlight.departureIata))
                                                 .putExtra("arrival", Pair(arrivalCity ?: "", dbFlight.arrivalIata))
                                                 .putExtra("departureTime", dbFlight.scheduledDeparture)
+                                                .putExtra("message", "Flight status has been updated!")
 
                                             val pendingIntent = PendingIntent.getActivity(context, 1, activityIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
 

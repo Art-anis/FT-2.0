@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -46,7 +47,7 @@ fun SignInScreen(
     ) {
         //заголовок
         Text(
-            text = "Sign in",
+            text = stringResource(R.string.sign_in),
             modifier = Modifier.padding(bottom = 64.dp),
             style = MaterialTheme.typography.titleLarge
         )
@@ -59,17 +60,18 @@ fun SignInScreen(
 
         //имя пользователя
         TextField(
-            modifier = Modifier.padding(bottom = 32.dp)
+            modifier = Modifier
+                .padding(bottom = 32.dp)
                 .focusRequester(focusRequester),
             value = username,
             onValueChange = {
                 username = it
             },
             label = {
-                Text("Username")
+                Text(stringResource(R.string.username))
             },
             placeholder = {
-                Text("Enter your username...")
+                Text(stringResource(R.string.username_placeholder))
             },
             singleLine = true,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
@@ -83,10 +85,10 @@ fun SignInScreen(
                 password = it
             },
             label = {
-                Text("Password")
+                Text(stringResource(R.string.password))
             },
             placeholder = {
-                Text("Enter your password...")
+                Text(stringResource(R.string.password_hint))
             },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
             visualTransformation = if (!passwordVisible) PasswordVisualTransformation() else VisualTransformation.None,
@@ -96,10 +98,10 @@ fun SignInScreen(
                     painter = painterResource(if (passwordVisible) R.drawable.hide_password else R.drawable.show_password),
                     contentDescription = null,
                     modifier = Modifier
-                            .size(20.dp)
-                            .clickable {
-                        passwordVisible = !passwordVisible
-                    }
+                        .size(20.dp)
+                        .clickable {
+                            passwordVisible = !passwordVisible
+                        }
                 )
             }
         )
@@ -119,7 +121,7 @@ fun SignInScreen(
                 }
             }
         ) {
-            Text("Sign in!")
+            Text(stringResource(R.string.sign_in_prompt))
         }
     }
 }
@@ -134,19 +136,21 @@ fun validateSignIn(username: String, password: String): Boolean {
     val context = App.getInstance().applicationContext
     //если логин неверный, выводим тост
     if (!isUsernameValid) {
-        Toast.makeText(context, "Username is empty!", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, context.getString(R.string.empty_username_error), Toast.LENGTH_SHORT).show()
         return false
     }
     //если пароль невалидный, выводим сооветствующую ошибку
     if (!isPasswordValid) {
         if (password.length < 8) {
-            Toast.makeText(context, "Password must be longer than 8 symbols!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context,
+                context.getString(R.string.short_password_error), Toast.LENGTH_SHORT).show()
         }
         else if (!password.contains(Regex("[A-Z]"))) {
-            Toast.makeText(context, "Password must contain a capital letter!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context,
+                context.getString(R.string.no_capital_letter_error), Toast.LENGTH_SHORT).show()
         }
         else if (!password.contains(Regex("[0-9]"))) {
-            Toast.makeText(context, "Password must contain a digit!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, context.getString(R.string.no_digit_error), Toast.LENGTH_SHORT).show()
         }
         return false
     }

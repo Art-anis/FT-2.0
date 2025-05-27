@@ -1,6 +1,7 @@
 package com.example.ft.update_tracked_data
 
 import android.preference.PreferenceManager
+import android.text.Html
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,10 +11,16 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowRightAlt
+import androidx.compose.material.icons.filled.ArrowRightAlt
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -25,12 +32,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil3.compose.rememberAsyncImagePainter
 import coil3.request.ImageRequest
 import com.example.db.entities.TrackedFlightEntity
 import com.example.ft.App
+import com.example.ft.R
+import com.example.ft.util.SubHeader
 import com.example.ft.util.TrackedFlightUpdateData
 import com.example.ft.view_flight.AIRLINE_LOGO_URL
 import com.example.tracked_flights.TrackedFlightsRepository
@@ -45,7 +58,8 @@ import kotlin.reflect.typeOf
 fun UpdateDataScreen(
     navigateToTrackedFlights: () -> Unit, //возврат в основное приложение
     flightData: TrackedFlightUpdateData, //данные о рейсе
-    differences: HashMap<String, Pair<String, String>> //различия
+    differences: HashMap<String, Pair<String, String>>, //различия
+    message: String
 ) {
 
     //флаг загрузки логотипа
@@ -94,6 +108,32 @@ fun UpdateDataScreen(
                 .padding(top = 32.dp),
             verticalArrangement = Arrangement.Center
         ) {
+            if (message.isNotEmpty()) {
+                Text(
+                    text = message,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 36.sp
+                )
+                //заголовок с названием и логотипом авиалинии
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    //логотип
+                    Image(
+                        painter = logo,
+                        contentDescription = null,
+                        modifier = Modifier.size(100.dp)
+                    )
+                    Spacer(modifier = Modifier.width(32.dp))
+                    //название
+                    SubHeader(modifier = Modifier, text = flightData.flightNumber)
+                }
+            }
             LazyColumn(
                 modifier = Modifier.fillMaxWidth()
                     .fillMaxHeight(0.85f)
@@ -103,23 +143,26 @@ fun UpdateDataScreen(
             ) {
                 item {
                     Column {
-                        //заголовок с названием и логотипом авиалинии
                         Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.Center
+                            modifier = Modifier.fillMaxWidth()
+                                .padding(bottom = 24.dp),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            //логотип
-                            Image(
-                                painter = logo,
-                                contentDescription = null
+                            //маршрут рейса
+                            Text(
+                                text = "${flightData.departure.first} (${flightData.departure.second})",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 24.sp
                             )
-                            Spacer(modifier = Modifier.width(32.dp))
-                            //название
-                            Text(flightData.flightNumber)
+                            Icon(Icons.AutoMirrored.Filled.ArrowRightAlt, contentDescription = null)
+                            Text(
+                                text = "${flightData.arrival.first} (${flightData.arrival.second})",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 24.sp
+                            )
                         }
                     }
-                    //маршрут рейса
-                    Text("${flightData.departure.first} (${flightData.departure.second}) -> ${flightData.arrival.first} (${flightData.arrival.second})")
                 }
                 //список обновлений
                 items(differences.toList()) { difference ->
@@ -151,24 +194,32 @@ fun UpdateDataScreen(
                                             if (char.isLowerCase()) char.titlecase(Locale.ENGLISH) else char.toString()
                                         }
                                     }
-                            Text(capitalizedFieldName)
+                            SubHeader(
+                                modifier = Modifier.fillMaxWidth()
+                                    .padding(bottom = 8.dp),
+                                capitalizedFieldName
+                            )
                             //сами изменения
-                            Row {
+                            Row(
+                                modifier = Modifier.padding(bottom = 16.dp)
+                            ) {
                                 //выводим старое значение, только если не нулевое
                                 if (field.returnType == typeOf<Long>() && difference.second.first.toLong() != 0L || field.returnType == typeOf<String>() && oldValue.isNotEmpty()) {
                                     Text(
                                         text = oldValue,
-                                        color = Color.Red,
-                                        textDecoration = TextDecoration.LineThrough
+                                        color = colorResource(R.color.old_data),
+                                        textDecoration = TextDecoration.LineThrough,
+                                        fontSize = 18.sp
                                     )
                                     Spacer(modifier = Modifier.width(8.dp))
-                                    Text("->")
+                                    Icon(Icons.AutoMirrored.Filled.ArrowRightAlt, contentDescription = null)
                                     Spacer(modifier = Modifier.width(8.dp))
                                 }
                                 //новое значение
                                 Text(
                                     text = newValue,
-                                    color = Color.Green
+                                    color = colorResource(R.color.updated_data),
+                                    fontSize = 18.sp
                                 )
                             }
                         }

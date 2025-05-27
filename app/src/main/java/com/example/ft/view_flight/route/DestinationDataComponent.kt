@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.text.font.FontWeight
 import com.example.view_flight.util.DestinationData
 
 //компонент с данными о месте вылета/прибытия
@@ -16,7 +17,10 @@ fun DestinationDataComponent(
         horizontalAlignment = alignment
     ) {
         //название города
-        Text(text = destination.cityName)
+        Text(
+            text = destination.cityName,
+            fontWeight = FontWeight.Bold
+        )
         //iata код
         Text(text = destination.iata.uppercase())
         //время вылета/прибытия

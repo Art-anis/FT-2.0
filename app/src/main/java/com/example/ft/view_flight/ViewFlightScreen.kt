@@ -3,15 +3,18 @@ package com.example.ft.view_flight
 import android.content.Intent
 import android.provider.CalendarContract
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -25,12 +28,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImagePainter
 import coil3.compose.rememberAsyncImagePainter
 import coil3.request.ImageRequest
 import com.example.ft.R
 import com.example.ft.navigation.FlightData
 import com.example.ft.notifications.scheduleReminder
+import com.example.ft.util.SubHeader
 import com.example.ft.view_flight.airline_codeshared.AirlineAndCodesharedRow
 import com.example.ft.view_flight.route.RouteRow
 import com.example.ft.view_flight.terminal_gate.TermAndGateRow
@@ -41,7 +49,7 @@ import java.util.Calendar
 import java.util.Locale
 
 //url для получения логотипов авиалиний
-const val AIRLINE_LOGO_URL = "https://pics.avs.io/200/50/"
+const val AIRLINE_LOGO_URL = "https://pics.avs.io/200/100/"
 
 //экран просмотра отдельного рейса
 @Composable
@@ -120,18 +128,39 @@ fun ViewFlightScreen(
         }
         else {
             //контейнер
-            Column {
+            Box(
+                modifier = Modifier.fillMaxSize()
+            ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .fillMaxHeight(0.9f)
                         .verticalScroll(state = scrollState)
                 ) {
+                    Text(
+                        text = "Flight ${data.flightNumber}",
+                        modifier = Modifier.fillMaxWidth()
+                            .padding(vertical = 16.dp),
+                        fontSize = 28.sp,
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+                    SubHeader(
+                        modifier = Modifier.fillMaxWidth()
+                            .padding(top = 16.dp),
+                        text = "Route data"
+                    )
                     //места вылета и прибытия
                     RouteRow(
                         departure = data.departure,
                         arrival = data.arrival,
                         status = data.status
+                    )
+
+                    SubHeader(
+                        modifier = Modifier.fillMaxWidth()
+                            .padding(top = 32.dp),
+                        text = "Terminals and gates"
                     )
                     //номера терминалов и выходов
                     TermAndGateRow(
@@ -139,6 +168,12 @@ fun ViewFlightScreen(
                         departureGate = data.departure.gate,
                         arrivalTerminal = data.arrival.terminal,
                         arrivalGate = data.arrival.gate
+                    )
+
+                    SubHeader(
+                        modifier = Modifier.fillMaxWidth()
+                            .padding(top = 32.dp, bottom = 8.dp),
+                        text = stringResource(R.string.airline_and_codeshared_header)
                     )
                     //данные об авиалинии и кодшеринге, если он есть
                     AirlineAndCodesharedRow(
@@ -151,6 +186,9 @@ fun ViewFlightScreen(
                 //кнопка для отслеживания рейса
                 Row(
                     modifier = Modifier.fillMaxWidth()
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = 16.dp),
+                    horizontalArrangement = Arrangement.Center
                 ) {
                     val scope = rememberCoroutineScope()
                     val context = LocalContext.current

@@ -14,11 +14,11 @@ interface AirportDao {
     suspend fun addAirport(airport: AirportEntity)
 
     //поиск по названию или по коду iata
-    @Query("select * from airports where airport_name like :query or iata_code like :query order by airport_name")
+    @Query("select * from airports where airport_name like :query or iata_code like :query order by iata_code")
     suspend fun searchAirports(query: String): List<AirportEntity>
 
     //получение истории поиска аэропортов
-    @Query("select * from airports where last_search != 0 order by last_search desc limit 3")
+    @Query("select * from airports where last_search != 0 order by last_search desc limit 2")
     suspend fun getHistory(): List<AirportEntity>
 
     //получение аэропорта по iata

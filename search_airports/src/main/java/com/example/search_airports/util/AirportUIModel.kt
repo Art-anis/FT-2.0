@@ -8,5 +8,6 @@ data class AirportUIModel(
     val airportName: String = "",
     val cityName: String = "",
     val countryName: String = "",
+    val countryCode: String = "",
     val iataCode: String = ""
 )

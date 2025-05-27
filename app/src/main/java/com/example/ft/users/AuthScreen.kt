@@ -26,7 +26,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.ft.R
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
@@ -44,7 +46,7 @@ fun AuthScreen(
         .padding(vertical = 32.dp)) { 
 
         //вкладки
-        val tabItems = listOf("Sign up", "Sign in")
+        val tabItems = listOf(stringResource(R.string.sign_up), stringResource(R.string.sign_in))
 
         //индекс выбранной вкладки
         var selectedTabIndex by rememberSaveable { mutableIntStateOf(if (firstLaunch) 0 else 1) }
@@ -110,7 +112,8 @@ fun AuthScreen(
                             scope.launch {
                                 val signedUp = viewmodel.signUp(username, email, password)
                                 if(!signedUp) {
-                                    Toast.makeText(context, "User with this username already exists!", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context,
+                                        context.getString(R.string.user_exists_error), Toast.LENGTH_SHORT).show()
                                 }
                                 else {
                                     navigateToSearch()
@@ -129,7 +132,8 @@ fun AuthScreen(
                                 val signedIn = viewmodel.signIn(username, password)
                                 //если неуспешно, выводим тост
                                 if (!signedIn) {
-                                    Toast.makeText(context, "Username or password are incorrect!", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context,
+                                        context.getString(R.string.incorrect_data_error), Toast.LENGTH_SHORT).show()
                                 }
                                 //иначе переходим на главную страницу
                                 else {

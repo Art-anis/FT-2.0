@@ -96,9 +96,3 @@ fun LoadingAnimation(modifier: Modifier) {
         )
     }
 }
-
-@Preview(showBackground = true)
-@Composable
-fun AnimationPreview() {
-    LoadingAnimation(modifier = Modifier.size(100.dp))
-}

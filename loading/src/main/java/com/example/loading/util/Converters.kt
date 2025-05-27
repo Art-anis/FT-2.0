@@ -13,6 +13,7 @@ fun ResponseAirport.toEntity(): AirportEntity {
         icao = this.codeIcaoAirport ?: "",
         iata = this.codeIataAirport!!,
         cityIata = this.codeIataCity ?: "",
+        countryCode = this.codeIso2Country ?: "",
         countryName = this.nameCountry ?: ""
     )
 }

@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -47,7 +48,7 @@ fun SignUpScreen(
     ) {
         //заголовок
         Text(
-            text = "Sign up",
+            text = stringResource(R.string.sign_up),
             modifier = Modifier.padding(bottom = 64.dp),
             style = MaterialTheme.typography.titleLarge
         )
@@ -67,26 +68,27 @@ fun SignUpScreen(
                 username = it
             },
             label = {
-                Text("Username")
+                Text(stringResource(R.string.username))
             },
             placeholder = {
-                Text("Enter your username...")
+                Text(stringResource(R.string.username_placeholder))
             },
             singleLine = true,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
         )
         TextField(
-            modifier = Modifier.padding(vertical = 32.dp)
+            modifier = Modifier
+                .padding(vertical = 32.dp)
                 .focusRequester(focusRequester),
             value = email,
             onValueChange = {
                 email = it
             },
             label = {
-                Text("Email")
+                Text(stringResource(R.string.email))
             },
             placeholder = {
-                Text("Enter your email...")
+                Text(stringResource(R.string.email_placeholder))
             },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next),
             singleLine = true
@@ -98,10 +100,10 @@ fun SignUpScreen(
                 password = it
             },
             label = {
-                Text("Password")
+                Text(stringResource(R.string.password))
             },
             placeholder = {
-                Text("Enter your password...")
+                Text(stringResource(R.string.password_hint))
             },
             trailingIcon = {
                 //иконка для видимости пароля
@@ -111,8 +113,8 @@ fun SignUpScreen(
                     modifier = Modifier
                         .size(20.dp)
                         .clickable {
-                        passwordVisible = !passwordVisible
-                    }
+                            passwordVisible = !passwordVisible
+                        }
                 )
             },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
@@ -132,7 +134,7 @@ fun SignUpScreen(
                 }
             }
         ) {
-            Text("Sign up!")
+            Text(stringResource(R.string.sign_up_prompt))
         }
     }
 }
@@ -144,22 +146,22 @@ fun validateSignUp(username: String, email: String, password: String): Boolean {
 
     val context = App.getInstance().applicationContext
     if (!isUsernameValid) {
-        Toast.makeText(context, "Username is empty!", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, context.getString(R.string.empty_username_error), Toast.LENGTH_SHORT).show()
         return false
     }
     if (!isEmailValid) {
-        Toast.makeText(context, "Email is not valid!", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, context.getString(R.string.invalid_email), Toast.LENGTH_SHORT).show()
         return false
     }
     if (!isPasswordValid) {
         if (password.length < 8) {
-            Toast.makeText(context, "Password must be longer than 8 symbols!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, context.getString(R.string.short_password_error), Toast.LENGTH_SHORT).show()
         }
         else if (!password.contains(Regex("[A-Z]"))) {
-            Toast.makeText(context, "Password must contain a capital letter!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, context.getString(R.string.no_capital_letter_error), Toast.LENGTH_SHORT).show()
         }
         else if (!password.contains(Regex("[0-9]"))) {
-            Toast.makeText(context, "Password must contain a digit!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, context.getString(R.string.no_digit_error), Toast.LENGTH_SHORT).show()
         }
         return false
     }

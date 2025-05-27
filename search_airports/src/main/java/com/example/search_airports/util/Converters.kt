@@ -8,6 +8,7 @@ fun AirportEntity.toUIModel(cityName: String): AirportUIModel {
         airportName = this.name,
         cityName = cityName,
         countryName = this.countryName,
+        countryCode = this.countryCode,
         iataCode = this.iata
     )
 }

@@ -1,15 +1,19 @@
 package com.example.ft.search.search_airports
 
 import android.widget.Toast
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.ft.R
 import com.example.ft.util.DestinationType
@@ -25,13 +29,6 @@ fun LazyListScope.airportSearchResults(
     viewModel: AirportsSearchViewModel, //viewmodel
     setAirport: (AirportUIModel) -> Boolean //функция выбора аэропорта
 ) {
-    //заголовок для результатов поиска
-    item {
-        Text(
-            text = stringResource(R.string.search_results_header),
-            modifier = Modifier.padding(top = 32.dp, bottom = 16.dp)
-        )
-    }
     //сам список
     items(searchResult) { airport ->
         val context = LocalContext.current
@@ -62,14 +59,27 @@ fun LazyListScope.airportSearchResults(
                 }
             }
         )
-        HorizontalDivider()
     }
 
     //если результат поиска пустой и при этом поле поиска не пусто и не идет процесс загрузки
-    if (searchResult.isEmpty() && query.text.isNotEmpty() && loading == false) {
+    if (searchResult.isEmpty() && query.text.isNotEmpty() && !loading) {
         //выводим текст о том, что ничего не нашли
         item {
-            Text(stringResource(R.string.empty_search_result))
+            Text(
+                text = stringResource(R.string.empty_search_result),
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center
+            )
+        }
+    }
+
+    if (query.text.isEmpty()) {
+        item {
+            Text(
+                text = stringResource(R.string.start_searching_prompt),
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center
+            )
         }
     }
 }
