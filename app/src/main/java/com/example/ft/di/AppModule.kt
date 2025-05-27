@@ -17,7 +17,7 @@ val appModule = module {
 
     viewModel { AirportsSearchViewModel(repository = get()) }
 
-    viewModel { FlightsSearchViewModel() }
+    viewModel { FlightsSearchViewModel(repository = get()) }
 
     viewModel { TrackedFlightsViewModel(repository = get()) }
 

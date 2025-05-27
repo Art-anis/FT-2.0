@@ -6,11 +6,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.flight_list.util.FlightItemUIModel
 import com.example.flight_list.util.toItemUIModel
+import com.example.search_airports.util.AirportUIModel
 import com.example.search_flights.FlightsSearchRepository
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 //viewmodel для списка рейсов
 class FlightListViewModel(
@@ -29,18 +27,17 @@ class FlightListViewModel(
 
 
     //процедура поиска рейсов
-    fun searchFlights(departure: String, arrival: String, date: Long) {
+    fun searchFlights(departure: AirportUIModel, arrival: AirportUIModel, date: Long) {
         viewModelScope.launch {
-            //форматируем дату
-            val formattedDate = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).format(Date(date))
-
             //обновляем состояние загрузки
             _loading.value = true
             //поиск
             flightSearchRepository.searchFlights(
-                departure = departure,
-                arrival = arrival,
-                date = formattedDate
+                departureIata = departure.iataCode,
+                arrivalIata = arrival.iataCode,
+                date = date,
+                departureCity = departure.cityName,
+                arrivalCity = arrival.cityName
             )
             _flightList.value = flightSearchRepository.searchResult.map { it.toItemUIModel() }
             //обновляем состояние загрузки

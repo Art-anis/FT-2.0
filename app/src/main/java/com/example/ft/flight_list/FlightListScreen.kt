@@ -40,8 +40,8 @@ fun FlightListScreen(
         if (flightsList.value.isNullOrEmpty()) {
             //запускаем поиск
             viewModel.searchFlights(
-                departure = searchData.departure.iataCode,
-                arrival = searchData.arrival.iataCode,
+                departure = searchData.departure,
+                arrival = searchData.arrival,
                 date = searchData.date
             )
         }

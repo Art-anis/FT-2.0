@@ -3,18 +3,27 @@ package com.example.ft.search.search_flights
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.search_airports.util.AirportUIModel
+import com.example.search_flights.FlightsSearchRepository
 import com.example.search_flights.util.FlightSearchUIModel
+import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.Date
 
 //viewmodel для поиска рейсов
-class FlightsSearchViewModel: ViewModel() {
+class FlightsSearchViewModel(
+    private val repository: FlightsSearchRepository
+): ViewModel() {
 
     //состояние фрагмента поиска
     private var _searchModel: MutableLiveData<FlightSearchUIModel> = MutableLiveData(FlightSearchUIModel())
     val searchModel: LiveData<FlightSearchUIModel>
         get() = _searchModel
+
+    private var _searchHistory: MutableLiveData<List<String>> = MutableLiveData(emptyList())
+    val searchHistory: LiveData<List<String>>
+        get() = _searchHistory
 
     //при создании viewmodel инициализируем данные
     init {
@@ -22,6 +31,7 @@ class FlightsSearchViewModel: ViewModel() {
         val calendar = Calendar.getInstance()
         calendar.add(Calendar.DATE, 8)
         _searchModel.value = _searchModel.value?.copy(date = calendar.time)
+        getHistory()
     }
 
     //выбор вылета
@@ -65,4 +75,9 @@ class FlightsSearchViewModel: ViewModel() {
     }
 
 
+    fun getHistory() {
+        viewModelScope.launch {
+            _searchHistory.value = repository.getHistory()
+        }
+    }
 }

@@ -6,5 +6,5 @@ import org.koin.dsl.module
 //модуль поиска рейсов
 val searchFlightsModule = module {
     //репозиторий
-    single { FlightsSearchRepository(api = get()) }
+    single { FlightsSearchRepository(api = get(), historyDao = get()) }
 }

@@ -2,13 +2,22 @@ package com.example.ft.search.search_flights
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -26,7 +35,13 @@ fun FlightSearchScreen(
     onLaunchSearch: (AirportUIModel, AirportUIModel, Date) -> Unit //функция запуска поиска рейсов
 ) {
     //состояние фрагмента поиска
-    val searchData = viewModel.searchModel.observeAsState()
+    val searchData by viewModel.searchModel.observeAsState()
+
+    val searchHistory by viewModel.searchHistory.observeAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.getHistory()
+    }
     //коренной элемент
     Column(
         modifier = Modifier.fillMaxSize()
@@ -38,7 +53,7 @@ fun FlightSearchScreen(
                 .background(color = Color.Blue)
                 .padding(top = 32.dp)
         ) {
-            searchData.value?.let {
+            searchData?.let {
                 //поля поиска для аэропортов
                 AirportSearchComponent(
                     departure = it.departure,
@@ -62,11 +77,11 @@ fun FlightSearchScreen(
                         .padding(horizontal = 32.dp)
                         .padding(bottom = 16.dp),
                     //включена, только если были выбраны аэропорты вылета и прибытия
-                    enabled = !searchData.value?.departure?.iataCode.isNullOrEmpty() &&
-                            !searchData.value?.arrival?.iataCode.isNullOrEmpty(),
+                    enabled = !searchData?.departure?.iataCode.isNullOrEmpty() &&
+                            !searchData?.arrival?.iataCode.isNullOrEmpty(),
                     //при нажатии передаем все необходимые данные в активность
                     onClick = {
-                        val model = searchData.value!!
+                        val model = searchData!!
 
                         //запускаем процедуру поиска рейсов
                         onLaunchSearch(
@@ -82,8 +97,24 @@ fun FlightSearchScreen(
 
         }
         //отображение истории поиска
-        Column {
-            
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            if (searchHistory.isNullOrEmpty()) {
+                item {
+                    Text("You haven't searched anything yet!")
+                }
+            }
+            else {
+                items(searchHistory!!) {
+                    Row(modifier = Modifier.fillMaxWidth())
+                    {
+                        Icon(Icons.Filled.History, contentDescription = null)
+                        Text(it)
+                    }
+                }
+            }
         }
     }
 }

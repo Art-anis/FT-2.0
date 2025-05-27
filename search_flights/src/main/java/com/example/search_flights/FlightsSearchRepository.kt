@@ -1,11 +1,17 @@
 package com.example.search_flights
 
+import com.example.db.dao.FlightSearchHistoryDao
+import com.example.db.entities.FlightSearchHistoryEntity
 import com.example.network.api.FutureFlightsAPI
 import com.example.network.models.ResponseFutureFlight
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 //репозиторий для поиска рейсов
 class FlightsSearchRepository(
-    private val api: FutureFlightsAPI //api рейсов
+    private val api: FutureFlightsAPI, //api рейсов
+    private val historyDao: FlightSearchHistoryDao
 ) {
 
     //список ответов из api
@@ -14,15 +20,18 @@ class FlightsSearchRepository(
         get() = _searchResult
 
     //поиск рейсов
-    suspend fun searchFlights(departure: String, arrival: String, date: String) {
+    suspend fun searchFlights(departureIata: String, departureCity: String, arrivalIata: String, arrivalCity: String, date: Long) {
+        //форматируем дату
+        val formattedDate = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).format(Date(date))
+
         //сначала получаем все рейсы из аэропорта вылета в данную дату
-        val allFlights = api.getFlights(airportIata = departure, destinationType = "departure", date = date)
+        val allFlights = api.getFlights(airportIata = departureIata, destinationType = "departure", date = formattedDate)
         if (allFlights.isSuccessful) {
             val body = allFlights.body()
             body?.let { result ->
                 //затем фильтруем по аэропорту прибытия и сортируем по времени вылета
                 val filteredFlights = result
-                    .filter { it.arrival?.iataCode == arrival.lowercase() }
+                    .filter { it.arrival?.iataCode == arrivalIata.lowercase() }
                     .sortedBy { it.departure?.scheduledTime }
 
                 //группируем рейсы по вылету и прибытию, чтобы потом исключить дубликаты
@@ -38,11 +47,23 @@ class FlightsSearchRepository(
                     }
                 }
             }
+
+            historyDao.addFlightToHistory(FlightSearchHistoryEntity(
+                searchTime = Date().time,
+                departure = "$departureCity, $departureIata",
+                arrival = "$arrivalCity, $arrivalIata",
+                departureDate = formattedDate
+            ))
         }
     }
 
     //выбор рейса из результатов поиска
     fun findFlight(flightNumber: String): ResponseFutureFlight? {
         return _searchResult.find { "${it.airline?.iataCode} ${it.flight?.number}".uppercase() == flightNumber }
+    }
+
+    suspend fun getHistory(): List<String> {
+        val result = historyDao.getLastSearchedFlights()
+        return result.map { "From ${it.departure} to ${it.arrival} at ${it.departureDate}" }
     }
 }
