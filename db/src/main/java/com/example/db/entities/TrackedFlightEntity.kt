@@ -2,13 +2,22 @@ package com.example.db.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.isAccessible
 
 //отслеживаемые рейсы
-@Entity(tableName = "tracked_flights", indices = [Index(value = ["scheduled_departure", "flight_iata", "username"], unique = true)])
+@Entity(tableName = "tracked_flights",
+    indices = [Index(value = ["scheduled_departure", "flight_iata", "username"], unique = true)],
+    foreignKeys = [ForeignKey(
+        entity = UserEntity::class,
+        parentColumns = arrayOf("username"),
+        childColumns = arrayOf("username"),
+        onDelete = ForeignKey.CASCADE
+    )]
+)
 data class TrackedFlightEntity(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo("id") val id: Int = 0, //id

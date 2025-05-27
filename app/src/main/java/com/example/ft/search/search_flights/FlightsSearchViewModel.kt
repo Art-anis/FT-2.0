@@ -1,9 +1,11 @@
 package com.example.ft.search.search_flights
 
+import android.preference.PreferenceManager
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.ft.App
 import com.example.search_airports.util.AirportUIModel
 import com.example.search_flights.FlightsSearchRepository
 import com.example.search_flights.util.FlightSearchUIModel
@@ -77,7 +79,9 @@ class FlightsSearchViewModel(
 
     fun getHistory() {
         viewModelScope.launch {
-            _searchHistory.value = repository.getHistory()
+            val pref = PreferenceManager.getDefaultSharedPreferences(App.getInstance().applicationContext)
+            val username = pref.getString("activeUser", "") ?: ""
+            _searchHistory.value = repository.getHistory(username)
         }
     }
 }

@@ -20,7 +20,7 @@ class FlightsSearchRepository(
         get() = _searchResult
 
     //поиск рейсов
-    suspend fun searchFlights(departureIata: String, departureCity: String, arrivalIata: String, arrivalCity: String, date: Long) {
+    suspend fun searchFlights(departureIata: String, departureCity: String, arrivalIata: String, arrivalCity: String, date: Long, username: String) {
         //форматируем дату
         val formattedDate = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).format(Date(date))
 
@@ -52,7 +52,8 @@ class FlightsSearchRepository(
                 searchTime = Date().time,
                 departure = "$departureCity, $departureIata",
                 arrival = "$arrivalCity, $arrivalIata",
-                departureDate = formattedDate
+                departureDate = formattedDate,
+                username = username
             ))
         }
     }
@@ -62,8 +63,8 @@ class FlightsSearchRepository(
         return _searchResult.find { "${it.airline?.iataCode} ${it.flight?.number}".uppercase() == flightNumber }
     }
 
-    suspend fun getHistory(): List<String> {
-        val result = historyDao.getLastSearchedFlights()
+    suspend fun getHistory(username: String): List<String> {
+        val result = historyDao.getLastSearchedFlights(username)
         return result.map { "From ${it.departure} to ${it.arrival} at ${it.departureDate}" }
     }
 }

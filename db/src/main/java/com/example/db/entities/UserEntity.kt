@@ -6,10 +6,9 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 
 //таблица пользователей
-@Entity(tableName = "users", indices = [Index(value = ["username"], unique = true)])
+@Entity(tableName = "users")
 data class UserEntity(
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "id") val id: Int = 0, //id
+    @PrimaryKey
     @ColumnInfo(name = "username") val userName: String, //имя пользователя
     @ColumnInfo(name = "email") val email: String, //почта
     @ColumnInfo(name = "password") val password: String //пароль
