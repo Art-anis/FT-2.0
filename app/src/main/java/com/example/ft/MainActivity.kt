@@ -142,6 +142,9 @@ class MainActivity : ComponentActivity() {
                         //выводим ящик, если мы не в окне авторизации
                         val route = currentEntry?.destination?.route
                         if (route?.contains(Auth::class.java.name) != true && route?.contains(Loading::class.java.name) != true) {
+                            LaunchedEffect(Unit) {
+                                drawerState.close()
+                            }
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth(0.6f)
