@@ -64,6 +64,11 @@ class FlightsSearchViewModel(
         }
         _searchModel.value?.let {
             _searchModel.value!!.arrival = airport
+            val pref = PreferenceManager.getDefaultSharedPreferences(App.getInstance().applicationContext)
+            val username = pref.getString("activeUser", "") ?: ""
+            viewModelScope.launch {
+                airportSearchRepository.addToHistory(username = username, iata = airport.iataCode)
+            }
         }
         return true
     }
