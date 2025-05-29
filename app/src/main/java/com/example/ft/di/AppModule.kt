@@ -17,7 +17,7 @@ val appModule = module {
 
     viewModel { AirportsSearchViewModel(repository = get()) }
 
-    viewModel { FlightsSearchViewModel(repository = get()) }
+    viewModel { FlightsSearchViewModel(flightsSearchRepository = get(), airportSearchRepository = get()) }
 
     viewModel { TrackedFlightsViewModel(repository = get()) }
 
@@ -29,5 +29,5 @@ val appModule = module {
 
     viewModel { AuthViewModel(repository = get()) }
 
-    viewModel { AirportTimetableViewModel(repository = get()) }
+    viewModel { AirportTimetableViewModel(airportRepository = get(), airportSearchRepository = get()) }
 }

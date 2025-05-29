@@ -31,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.ft.R
 import com.example.ft.flight_list.FlightCard
@@ -49,8 +50,8 @@ fun AirportScreen(
 ) {
     //состояние аэропорта
     val airport by viewModel.selectedAirport.observeAsState()
-    var airportName = airport?.airportName
-    var cityName = airport?.cityName
+    val airportName = airport?.airportName
+    val cityName = airport?.cityName
 
     //дата вылета
     val calendar = Calendar.getInstance()
@@ -90,8 +91,7 @@ fun AirportScreen(
                     IconButton(
                         modifier = Modifier.size(20.dp),
                         onClick = {
-                            airportName = ""
-                            cityName = ""
+                            viewModel.clearSearch()
                         }
                     ) {
                         Icon(
@@ -142,7 +142,9 @@ fun AirportScreen(
             timetable?.let {
                 if (it.isEmpty()) {
                     item {
-                        Text(stringResource(R.string.flight_empty_search_result))
+                        Text(stringResource(R.string.flight_empty_search_result),
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center)
                     }
                 } else {
                     items(it) { data ->
@@ -162,7 +164,12 @@ fun AirportScreen(
         }
         else {
             item {
-                CircularProgressIndicator()
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    CircularProgressIndicator()
+                }
             }
         }
     }

@@ -79,8 +79,7 @@ class UpdateTrackedFlightService: Service() {
                                 val apiFlight = flights[0]
 
                                 //переводим дату вылета в миллисекунды
-                                val formattedDeparture = if (apiFlight.departure?.estimatedTime.toMillis() != 0L) apiFlight.departure?.estimatedTime.toMillis()
-                                    else apiFlight.departure?.scheduledTime.toMillis()
+                                val formattedDeparture = apiFlight.departure?.scheduledTime.toMillis()
 
                                 //получаем запись из БД
                                 val dbFlights = dao.getFlightByIata(flightIata, formattedDeparture)
@@ -88,7 +87,9 @@ class UpdateTrackedFlightService: Service() {
                                 //получаем фактические времена вылета и прибытия, если есть
                                 val actualDepartureTime = apiFlight.departure?.actualTime.toMillis()
                                 val actualArrivalTime = apiFlight.arrival?.actualTime.toMillis()
-
+                                Log.d("tag", apiFlight.departure?.estimatedTime.toMillis().toString())
+                                Log.d("tag", apiFlight.departure?.scheduledTime.toMillis().toString())
+                                Log.d("tag", apiFlight.toString())
                                 //если нашли запись
                                 dbFlights.forEach { dbFlight ->
                                     //конвертируем ответ api в формат БД
@@ -99,7 +100,6 @@ class UpdateTrackedFlightService: Service() {
                                         getCityNameByAirportIata(dbFlight.departureIata)
                                     val arrivalCity =
                                         getCityNameByAirportIata(dbFlight.arrivalIata)
-
                                     //если есть отличия
                                     if (convertedApiFlight != dbFlight) {
                                         //получаем список названий отличающихся полей

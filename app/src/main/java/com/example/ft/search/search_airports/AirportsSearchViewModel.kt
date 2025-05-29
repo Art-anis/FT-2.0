@@ -3,6 +3,7 @@ package com.example.ft.search.search_airports
 import android.Manifest
 import android.content.Context.LOCATION_SERVICE
 import android.location.LocationManager
+import android.preference.PreferenceManager
 import androidx.annotation.RequiresPermission
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -89,7 +90,9 @@ class AirportsSearchViewModel(
     private fun refreshHistory() {
         //подтягиваем историю
         viewModelScope.launch {
-            val history = repository.getHistory()
+            val pref = PreferenceManager.getDefaultSharedPreferences(App.getInstance().applicationContext)
+            val username = pref.getString("activeUser", "") ?: ""
+            val history = repository.getHistory(username)
             _airportSearchState.value = _airportSearchState.value?.copy(searchHistory = history)
         }
     }

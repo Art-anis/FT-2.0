@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.ft.App
+import com.example.search_airports.AirportSearchRepository
 import com.example.search_airports.util.AirportUIModel
 import com.example.search_flights.FlightsSearchRepository
 import com.example.search_flights.util.FlightSearchUIModel
@@ -15,7 +16,8 @@ import java.util.Date
 
 //viewmodel для поиска рейсов
 class FlightsSearchViewModel(
-    private val repository: FlightsSearchRepository
+    private val flightsSearchRepository: FlightsSearchRepository,
+    private val airportSearchRepository: AirportSearchRepository
 ): ViewModel() {
 
     //состояние фрагмента поиска
@@ -45,6 +47,11 @@ class FlightsSearchViewModel(
         //устанаваливаем аэропорт в UI-модели
         searchModel.value?.let {
             _searchModel.value!!.departure = airport
+            val pref = PreferenceManager.getDefaultSharedPreferences(App.getInstance().applicationContext)
+            val username = pref.getString("activeUser", "") ?: ""
+            viewModelScope.launch {
+                airportSearchRepository.addToHistory(username = username, iata = airport.iataCode)
+            }
         }
         return true
     }
@@ -81,7 +88,7 @@ class FlightsSearchViewModel(
         viewModelScope.launch {
             val pref = PreferenceManager.getDefaultSharedPreferences(App.getInstance().applicationContext)
             val username = pref.getString("activeUser", "") ?: ""
-            _searchHistory.value = repository.getHistory(username)
+            _searchHistory.value = flightsSearchRepository.getHistory(username)
         }
     }
 }

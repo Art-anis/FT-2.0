@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.example.db.AppDatabase
 import com.example.db.dao.AirlineDao
 import com.example.db.dao.AirportDao
+import com.example.db.dao.AirportSearchHistoryDao
 import com.example.db.dao.CityDao
 import com.example.db.dao.FlightSearchHistoryDao
 import com.example.db.dao.TrackedFlightDao
@@ -41,8 +42,12 @@ fun provideUserDao(db: AppDatabase): UserDao {
     return db.userDao()
 }
 
-fun provideHistoryDao(db: AppDatabase): FlightSearchHistoryDao {
-    return db.searchHistoryDao()
+fun provideFlightSearchHistoryDao(db: AppDatabase): FlightSearchHistoryDao {
+    return db.flightSearchHistoryDao()
+}
+
+fun provideAirportSearchHistoryDao(db: AppDatabase): AirportSearchHistoryDao {
+    return db.airportsSearchHistoryDao()
 }
 
 val dbModule = module {
@@ -55,5 +60,6 @@ val dbModule = module {
     single { provideTrackedFlightDao(db = get()) }
     single { provideAirlineDao(db = get()) }
     single { provideUserDao(db = get()) }
-    single { provideHistoryDao(db = get()) }
+    single { provideFlightSearchHistoryDao(db = get()) }
+    single { provideAirportSearchHistoryDao(db = get()) }
 }

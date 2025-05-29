@@ -70,6 +70,7 @@ import com.example.ft.navigation.MenuItem
 import com.example.ft.navigation.NavigationHost
 import com.example.ft.navigation.Search
 import com.example.ft.navigation.TrackedFlights
+import com.example.ft.notifications.scheduleService
 import com.example.ft.search.search_airports.AirportSearchScreen
 import com.example.ft.search.search_flights.FlightSearchScreen
 import com.example.ft.search.search_flights.FlightsSearchViewModel
